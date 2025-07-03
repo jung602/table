@@ -3,23 +3,36 @@
 import Image from "next/image";
 import { Background, Widget } from "@/components/ui";
 import HandTracking from "@/components/HandTracking";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 
 export default function Home() {
   const [activeWidget, setActiveWidget] = useState<string | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+  
+  // RAF를 위한 ref
+  const rafRef = useRef<number | null>(null);
 
-  const handlePinchDetected = (widgetId: string) => {
+  const handleHoverDetected = useCallback((widgetId: string) => {
+    if (isAnimating) return;
+    setIsAnimating(true);
     setActiveWidget(widgetId);
-  };
+    
+    // 애니메이션 완료 후 플래그 해제
+    setTimeout(() => setIsAnimating(false), 250);
+  }, [isAnimating]);
 
-  const handlePinchEnd = () => {
+  const handleHoverEnd = useCallback(() => {
+    if (isAnimating) return;
+    setIsAnimating(true);
     setActiveWidget(null);
-  };
+    
+    // 애니메이션 완료 후 플래그 해제
+    setTimeout(() => setIsAnimating(false), 250);
+  }, [isAnimating]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">
       <Background>
-
         {/* 중앙 텍스트 */}
         <div 
           style={{ 
@@ -30,6 +43,8 @@ export default function Home() {
            width: '100%',
            height: '100%',
            zIndex: 100,
+           opacity: activeWidget ? 0 : 1,
+           transition: 'opacity 0.2s ease-out',
           }}
           className="flex items-center justify-center"
         >
@@ -39,63 +54,75 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 좌측 상단 1x1 위젯 (418x418px) */}
+        {/* 좌측 상단 1x1 위젯 */}
         <Widget 
           style={{ 
             position: 'absolute',
-            left: activeWidget === 'widget1' ? '0px' : '60px',
-            top: activeWidget === 'widget1' ? '0px' : '60px',
-            width: activeWidget === 'widget1' ? '2378px' : '418px', 
-            height: activeWidget === 'widget1' ? '1485px' : '418px',
-            borderRadius: '260px',
+            left: activeWidget === 'widget1' ? 0 : 60,
+            top: activeWidget === 'widget1' ? 0 : 60,
+            width: activeWidget === 'widget1' ? 2378 : 418,
+            height: activeWidget === 'widget1' ? 1485 : 418,
+            borderRadius: 260,
             opacity: activeWidget && activeWidget !== 'widget1' ? 0 : 1,
-            transition: 'all 0.5s ease-in-out',
+            transition: 'all 0.25s cubic-bezier(0.23, 1, 0.32, 1)',
             zIndex: activeWidget === 'widget1' ? 200 : 1,
+            transform: 'translate3d(0, 0, 0)',
+            backfaceVisibility: 'hidden',
+            perspective: 1000,
           }} 
         />
         
-        {/* 좌측 하단 1x2 위젯 (418x877px) */}
+        {/* 좌측 하단 1x2 위젯 */}
         <Widget 
           style={{ 
             position: 'absolute',
-            left: activeWidget === 'widget2' ? '0px' : '60px',
-            top: activeWidget === 'widget2' ? '0px' : '524px',
-            width: activeWidget === 'widget2' ? '2378px' : '418px', 
-            height: activeWidget === 'widget2' ? '1485px' : '877px',
-            borderRadius: '260px',
+            left: activeWidget === 'widget2' ? 0 : 60,
+            top: activeWidget === 'widget2' ? 0 : 524,
+            width: activeWidget === 'widget2' ? 2378 : 418,
+            height: activeWidget === 'widget2' ? 1485 : 877,
+            borderRadius: 260,
             opacity: activeWidget && activeWidget !== 'widget2' ? 0 : 1,
-            transition: 'all 0.5s ease-in-out',
+            transition: 'all 0.25s cubic-bezier(0.23, 1, 0.32, 1)',
             zIndex: activeWidget === 'widget2' ? 200 : 1,
+            transform: 'translate3d(0, 0, 0)',
+            backfaceVisibility: 'hidden',
+            perspective: 1000,
           }} 
         />
         
-        {/* 우측 상단 1x2 위젯 (418x877px) */}
+        {/* 우측 상단 1x2 위젯 */}
         <Widget 
           style={{ 
             position: 'absolute',
-            right: activeWidget === 'widget3' ? '0px' : '60px',
-            top: activeWidget === 'widget3' ? '0px' : '60px',
-            width: activeWidget === 'widget3' ? '2378px' : '418px', 
-            height: activeWidget === 'widget3' ? '1485px' : '877px',
-            borderRadius: '260px',
+            right: activeWidget === 'widget3' ? 0 : 60,
+            top: activeWidget === 'widget3' ? 0 : 60,
+            width: activeWidget === 'widget3' ? 2378 : 418,
+            height: activeWidget === 'widget3' ? 1485 : 877,
+            borderRadius: 260,
             opacity: activeWidget && activeWidget !== 'widget3' ? 0 : 1,
-            transition: 'all 0.5s ease-in-out',
+            transition: 'all 0.25s cubic-bezier(0.23, 1, 0.32, 1)',
             zIndex: activeWidget === 'widget3' ? 200 : 1,
+            transform: 'translate3d(0, 0, 0)',
+            backfaceVisibility: 'hidden',
+            perspective: 1000,
           }} 
         />
         
-        {/* 우측 하단 1x1 위젯 (418x418px) */}
+        {/* 우측 하단 1x1 위젯 */}
         <Widget 
           style={{ 
             position: 'absolute',
-            right: activeWidget === 'widget4' ? '0px' : '60px',
-            bottom: activeWidget === 'widget4' ? '0px' : '60px',
-            width: activeWidget === 'widget4' ? '2378px' : '418px', 
-            height: activeWidget === 'widget4' ? '1485px' : '418px',
-            borderRadius: '260px',
+            right: activeWidget === 'widget4' ? 0 : 60,
+            bottom: activeWidget === 'widget4' ? 0 : 60,
+            width: activeWidget === 'widget4' ? 2378 : 418,
+            height: activeWidget === 'widget4' ? 1485 : 418,
+            borderRadius: 260,
             opacity: activeWidget && activeWidget !== 'widget4' ? 0 : 1,
-            transition: 'all 0.5s ease-in-out',
+            transition: 'all 0.25s cubic-bezier(0.23, 1, 0.32, 1)',
             zIndex: activeWidget === 'widget4' ? 200 : 1,
+            transform: 'translate3d(0, 0, 0)',
+            backfaceVisibility: 'hidden',
+            perspective: 1000,
           }} 
         />
       </Background>
@@ -104,8 +131,8 @@ export default function Home() {
       <HandTracking 
         width={2378} 
         height={1485} 
-        onPinchDetected={handlePinchDetected}
-        onPinchEnd={handlePinchEnd}
+        onHoverDetected={handleHoverDetected}
+        onHoverEnd={handleHoverEnd}
         activeWidget={activeWidget}
         widgetAreas={[
           { id: 'widget1', x: 60, y: 60, width: 418, height: 418 },

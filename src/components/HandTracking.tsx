@@ -2,16 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-// 손가락 연결선 정의
-const HAND_CONNECTIONS = [
-  [0, 1], [1, 2], [2, 3], [3, 4], // 엄지
-  [0, 5], [5, 6], [6, 7], [7, 8], // 검지
-  [5, 9], [9, 10], [10, 11], [11, 12], // 중지
-  [9, 13], [13, 14], [14, 15], [15, 16], // 약지
-  [13, 17], [17, 18], [18, 19], [19, 20], // 새끼
-  [0, 17] // 손목과 새끼 연결
-];
-
 interface WidgetArea {
   id: string;
   x: number;
@@ -23,8 +13,8 @@ interface WidgetArea {
 interface HandTrackingProps {
   width?: number;
   height?: number;
-  onPinchDetected?: (widgetId: string) => void;
-  onPinchEnd?: () => void;
+  onHoverDetected?: (widgetId: string) => void;
+  onHoverEnd?: () => void;
   widgetAreas?: WidgetArea[];
   activeWidget?: string | null;
 }
@@ -44,39 +34,13 @@ interface HandResults {
   }>;
 }
 
-// 핀치 제스처 감지 함수
-function isPinchGesture(landmarks: HandLandmark[]): boolean {
-  if (!landmarks || landmarks.length < 21) return false;
-  
-  const thumbTip = landmarks[4];
-  const indexTip = landmarks[8];
-  
-  // 엄지와 검지 끝점 사이의 거리 계산
-  const distance = Math.sqrt(
-    Math.pow(thumbTip.x - indexTip.x, 2) + 
-    Math.pow(thumbTip.y - indexTip.y, 2)
-  );
-  
-  // 거리가 임계값보다 작으면 핀치로 간주 (조정 가능)
-  return distance < 0.05;
-}
 
-// 점이 위젯 영역 안에 있는지 확인
-function isPointInWidget(x: number, y: number, widget: WidgetArea, canvasWidth: number, canvasHeight: number): boolean {
-  const pixelX = x * canvasWidth;
-  const pixelY = y * canvasHeight;
-  
-  return pixelX >= widget.x && 
-         pixelX <= widget.x + widget.width && 
-         pixelY >= widget.y && 
-         pixelY <= widget.y + widget.height;
-}
 
 export default function HandTracking({ 
   width = 320, 
   height = 240, 
-  onPinchDetected,
-  onPinchEnd,
+  onHoverDetected,
+  onHoverEnd,
   widgetAreas = [],
   activeWidget
 }: HandTrackingProps) {
@@ -87,28 +51,45 @@ export default function HandTracking({
   const [error, setError] = useState<string | null>(null);
   const handsRef = useRef<any>(null);
   const animationRef = useRef<number | null>(null);
-  const pinchStateRef = useRef<{ 
-    isPinching: boolean; 
+  const streamRef = useRef<MediaStream | null>(null);
+  const isInitializedRef = useRef<boolean>(false);
+  const cleanupRef = useRef<boolean>(false);
+  const hoverStateRef = useRef<{ 
+    isHovering: boolean; 
     widgetId: string | null;
-    lastPinchState: boolean;
+    startTime: number | null;
+    timerRef: number | null;
   }>({ 
-    isPinching: false, 
+    isHovering: false, 
     widgetId: null,
-    lastPinchState: false
+    startTime: null,
+    timerRef: null
   });
 
   useEffect(() => {
     let mounted = true;
+    
+    // 이미 초기화 중이거나 완료된 경우 중복 실행 방지
+    if (isInitializedRef.current || cleanupRef.current) {
+      return;
+    }
 
     const initializeHandTracking = async () => {
       try {
+        if (cleanupRef.current || !mounted) return;
+        
+        // ref 체크를 더 안전하게
         if (!videoRef.current || !canvasRef.current) {
-          console.log('Video 또는 Canvas ref가 준비되지 않음');
+          // 잠시 후 다시 시도
+          setTimeout(() => {
+            if (mounted && !cleanupRef.current) {
+              initializeHandTracking();
+            }
+          }, 100);
           return;
         }
 
-        console.log('카메라 권한 요청 중...');
-        setLoadingMessage('카메라 권한 요청 중...');
+        setLoadingMessage('카메라 연결 중...');
 
         // 웹캠 스트림 가져오기
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -119,43 +100,56 @@ export default function HandTracking({
           }
         });
 
-        console.log('카메라 스트림 획득 성공');
-        setLoadingMessage('카메라 연결됨, MediaPipe 로딩 중...');
+        if (!mounted || cleanupRef.current) {
+          // 컴포넌트가 언마운트되었으면 스트림 정리
+          stream.getTracks().forEach(track => track.stop());
+          return;
+        }
+
+        // 스트림 참조 저장
+        streamRef.current = stream;
+
+        // video element 재확인
+        if (!videoRef.current) {
+          stream.getTracks().forEach(track => track.stop());
+          setError('비디오 엘리먼트를 찾을 수 없습니다.');
+          return;
+        }
 
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
 
-        console.log('비디오 재생 시작');
-        setLoadingMessage('MediaPipe 모델 로딩 중...');
+        if (!mounted || cleanupRef.current) return;
+
+        setLoadingMessage('핸드트래킹 모델 로딩 중...');
 
         // MediaPipe Hands 동적 import
         const { Hands } = await import('@mediapipe/hands');
-        console.log('MediaPipe Hands 모듈 로드 완료');
+
+        if (!mounted || cleanupRef.current) return;
 
         // MediaPipe Hands 초기화
         const hands = new Hands({
           locateFile: (file: string) => {
-            const url = `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
-            console.log('파일 로딩:', url);
-            return url;
+            return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
           }
         });
 
-        console.log('MediaPipe Hands 인스턴스 생성 완료');
-        setLoadingMessage('모델 설정 중...');
+        if (!mounted || cleanupRef.current) {
+          hands.close();
+          return;
+        }
 
         hands.setOptions({
           maxNumHands: 2,
-          modelComplexity: 1,
-          minDetectionConfidence: 0.5,
-          minTrackingConfidence: 0.5
+          modelComplexity: 0, // 0으로 낮춰서 성능 향상
+          minDetectionConfidence: 0.7, // 높여서 안정성 향상
+          minTrackingConfidence: 0.7, // 높여서 안정성 향상
         });
-
-        console.log('MediaPipe 옵션 설정 완료');
 
         // 손 감지 결과 처리
         hands.onResults((results: HandResults) => {
-          if (!mounted || !canvasRef.current) return;
+          if (!mounted || cleanupRef.current || !canvasRef.current) return;
 
           const canvas = canvasRef.current;
           const ctx = canvas.getContext('2d');
@@ -164,148 +158,178 @@ export default function HandTracking({
           // 캔버스 클리어 (투명 배경)
           ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-          // 실제 비디오는 그리지 않음 - 뼈대만 표시
-
           // 손 랜드마크 그리기
           if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-            console.log(`${results.multiHandLandmarks.length}개의 손 감지됨`);
+            let anyHandDetected = false;
             
-            let anyPinching = false;
-            
-            // 각 손에 대해 처리 (오른손만)
+            // 각 손에 대해 처리 (양손 모두)
             for (let handIndex = 0; handIndex < results.multiHandLandmarks.length; handIndex++) {
-              // 손의 좌우 정보 확인
-              const handedness = results.multiHandedness?.[handIndex];
-              if (!handedness || handedness.label !== 'Right') {
-                console.log(`손 ${handIndex + 1}: ${handedness?.label || 'Unknown'} - 건너뜀 (오른손만 처리)`);
-                continue; // 오른손이 아니면 건너뜀
+              if (cleanupRef.current || !mounted) break; // 추가 안전 체크
+              
+              const landmarks = results.multiHandLandmarks[handIndex];
+              anyHandDetected = true;
+              
+              // 검지 끝 위치 가져오기
+              const indexTip = landmarks[8];
+              // x 좌표 반전 (미러링된 화면에 맞춤)
+              const indexX = 1 - indexTip.x;
+              const indexY = indexTip.y;
+              
+              // 검지가 어떤 위젯 위에 있는지 확인
+              const pixelX = indexX * canvas.width;
+              const pixelY = indexY * canvas.height;
+              
+              let detectedWidget: WidgetArea | undefined;
+              for (const widget of widgetAreas) {
+                if (pixelX >= widget.x && 
+                    pixelX <= widget.x + widget.width && 
+                    pixelY >= widget.y && 
+                    pixelY <= widget.y + widget.height) {
+                  detectedWidget = widget;
+                  break;
+                }
               }
               
-              console.log(`손 ${handIndex + 1}: ${handedness.label} - 처리함`);
-              const landmarks = results.multiHandLandmarks[handIndex];
-              
-              // 핀치 제스처 감지
-              const isPinching = isPinchGesture(landmarks);
-              
-              if (isPinching) {
-                anyPinching = true;
-                
-                // 핀치가 시작되었는지 확인 (이전에 핀치하지 않았는데 지금 핀치함)
-                if (!pinchStateRef.current.lastPinchState) {
-                  // 핀치하는 손의 중심점 계산 (엄지와 검지 끝점의 중점)
-                  const thumbTip = landmarks[4];
-                  const indexTip = landmarks[8];
-                  // x 좌표 반전 (미러링된 화면에 맞춤)
-                  const pinchCenterX = 1 - (thumbTip.x + indexTip.x) / 2;
-                  const pinchCenterY = (thumbTip.y + indexTip.y) / 2;
-                  
-                  // 핀치 중심점이 어떤 위젯 위에 있는지 확인
-                  const detectedWidget = widgetAreas.find(widget => 
-                    isPointInWidget(pinchCenterX, pinchCenterY, widget, canvas.width, canvas.height)
-                  );
-                  
-                  if (detectedWidget) {
-                    console.log(`핀치 시작: ${detectedWidget.id} (손 ${handIndex + 1})`);
-                    
-                    // 토글 방식: 이미 활성화된 위젯이 있으면 해제, 없으면 활성화
-                    if (activeWidget === detectedWidget.id) {
-                      // 같은 위젯을 다시 핀치하면 해제
-                      console.log(`위젯 ${detectedWidget.id} 해제`);
-                      onPinchEnd?.();
-                    } else if (!activeWidget) {
-                      // 활성화된 위젯이 없으면 새로 활성화
-                      console.log(`위젯 ${detectedWidget.id} 활성화`);
-                      onPinchDetected?.(detectedWidget.id);
-                    }
-                    
-                    pinchStateRef.current = { 
-                      isPinching: true, 
-                      widgetId: detectedWidget.id, 
-                      lastPinchState: true 
-                    };
-                  } else {
-                    // 위젯 밖에서 핀치하면 현재 활성화된 위젯 해제
-                    if (activeWidget) {
-                      console.log('위젯 밖에서 핀치 - 현재 위젯 해제');
-                      onPinchEnd?.();
-                    }
-                    pinchStateRef.current = { 
-                      isPinching: true, 
-                      widgetId: null, 
-                      lastPinchState: true 
-                    };
+              // 호버 상태 관리 (위젯이 활성화되어 있지 않을 때만)
+              if (detectedWidget && !cleanupRef.current && mounted && !activeWidget) {
+                // 위젯 위에 검지가 있음
+                if (!hoverStateRef.current.isHovering || hoverStateRef.current.widgetId !== detectedWidget.id) {
+                  // 새로운 호버 시작
+                  if (hoverStateRef.current.timerRef) {
+                    clearTimeout(hoverStateRef.current.timerRef);
                   }
+                  
+                  hoverStateRef.current.isHovering = true;
+                  hoverStateRef.current.widgetId = detectedWidget.id;
+                  hoverStateRef.current.startTime = Date.now();
+                  
+                  // 3초 후 선택
+                  hoverStateRef.current.timerRef = window.setTimeout(() => {
+                    if (hoverStateRef.current.widgetId === detectedWidget.id && !cleanupRef.current && mounted) {
+                      // 위젯 활성화 (토글 기능 제거)
+                      onHoverDetected?.(detectedWidget.id);
+                    }
+                  }, 3000);
+                }
+              } else {
+                // 위젯 밖으로 벗어남 또는 위젯이 이미 활성화됨
+                if (hoverStateRef.current.isHovering) {
+                  if (hoverStateRef.current.timerRef) {
+                    clearTimeout(hoverStateRef.current.timerRef);
+                    hoverStateRef.current.timerRef = null;
+                  }
+                  hoverStateRef.current.isHovering = false;
+                  hoverStateRef.current.widgetId = null;
+                  hoverStateRef.current.startTime = null;
                 }
               }
 
-              // 검지 끝과 엄지 끝에만 흰색 원 그리기
-              const thumbTip = landmarks[4]; // 엄지 끝
-              const indexTip = landmarks[8]; // 검지 끝
+              // 검지 끝에 원과 프로그레스바 그리기
+              const indexPixelX = indexTip.x * canvas.width;
+              const indexPixelY = indexTip.y * canvas.height;
               
-              // 엄지 끝 흰색 원
+              // 호버 중이면 프로그레스바 표시
+              if (hoverStateRef.current.isHovering && hoverStateRef.current.startTime) {
+                const elapsed = Date.now() - hoverStateRef.current.startTime;
+                const progress = Math.min(elapsed / 3000, 1); // 3초 동안 0에서 1로
+                
+                // 프로그레스에 따른 색상 계산 (흰색 → 노란색 → 초록색)
+                let r, g, b;
+                if (progress < 0.5) {
+                  // 흰색(255,255,255) → 노란색(255,255,0)
+                  const p = progress * 2; // 0 ~ 1
+                  r = 255;
+                  g = 255;
+                  b = Math.round(255 * (1 - p));
+                } else {
+                  // 노란색(255,255,0) → 초록색(0,255,0)
+                  const p = (progress - 0.5) * 2; // 0 ~ 1
+                  r = Math.round(255 * (1 - p));
+                  g = 255;
+                  b = 0;
+                }
+                
+                // 프로그레스바 링 그리기
+                ctx.strokeStyle = `rgb(${r}, ${g}, ${b})`;
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.arc(
+                  indexPixelX,
+                  indexPixelY,
+                  20, // 원보다 큰 반지름
+                  -1.5708, // -90도 (12시 방향 시작)
+                  -1.5708 + (6.28318530718 * progress), // 진행률만큼 호 그리기
+                  false
+                );
+                ctx.stroke();
+              }
+              
+              // 검지 끝 흰색 원 그리기
+              ctx.fillStyle = '#FFFFFF';
               ctx.beginPath();
               ctx.arc(
-                thumbTip.x * canvas.width,
-                thumbTip.y * canvas.height,
+                indexPixelX,
+                indexPixelY,
                 12,
                 0,
-                2 * Math.PI
+                6.28318530718 // 2 * Math.PI 상수로 대체
               );
-              ctx.fillStyle = '#FFFFFF';
-              ctx.fill();
-              
-              // 검지 끝 흰색 원
-              ctx.beginPath();
-              ctx.arc(
-                indexTip.x * canvas.width,
-                indexTip.y * canvas.height,
-                12,
-                0,
-                2 * Math.PI
-              );
-              ctx.fillStyle = '#FFFFFF';
               ctx.fill();
             }
             
-            // 핀치가 끝났는지 확인
-            if (!anyPinching && pinchStateRef.current.lastPinchState) {
-              console.log('핀치 종료 - 상태 유지');
-              pinchStateRef.current = { 
-                isPinching: false, 
-                widgetId: pinchStateRef.current.widgetId, 
-                lastPinchState: false 
-              };
+            // 손이 감지되지 않으면 호버 상태 초기화
+            if (!anyHandDetected && hoverStateRef.current.isHovering && !cleanupRef.current && mounted) {
+              if (hoverStateRef.current.timerRef) {
+                clearTimeout(hoverStateRef.current.timerRef);
+                hoverStateRef.current.timerRef = null;
+              }
+              hoverStateRef.current.isHovering = false;
+              hoverStateRef.current.widgetId = null;
+              hoverStateRef.current.startTime = null;
             }
           }
         });
 
         handsRef.current = hands;
-        console.log('결과 콜백 설정 완료');
         setLoadingMessage('초기화 완료, 프레임 처리 시작...');
 
-        // 프레임 처리 루프
-        const processFrame = async () => {
-          if (!mounted || !videoRef.current || !hands) return;
+        // 프레임 처리 루프 (60fps 제한)
+        let lastFrameTime = 0;
+        const targetFPS = 60;
+        const frameInterval = 1000 / targetFPS;
 
-          try {
-            await hands.send({ image: videoRef.current });
+        const processFrame = async (currentTime: number = performance.now()) => {
+          if (!mounted || cleanupRef.current || !videoRef.current || !handsRef.current) return;
+
+          // FPS 제한
+          if (currentTime - lastFrameTime >= frameInterval) {
+            try {
+              await handsRef.current.send({ image: videoRef.current });
+              lastFrameTime = currentTime;
+            } catch (err) {
+              if (!cleanupRef.current) {
+                console.error('프레임 처리 오류:', err);
+              }
+            }
+          }
+          
+          if (!cleanupRef.current && mounted) {
             animationRef.current = requestAnimationFrame(processFrame);
-          } catch (err) {
-            console.error('프레임 처리 오류:', err);
           }
         };
 
         // 프레임 처리 시작
-        console.log('프레임 처리 시작');
-        processFrame();
+        if (!cleanupRef.current && mounted) {
+          processFrame();
+          isInitializedRef.current = true;
+        }
 
-        if (mounted) {
+        if (mounted && !cleanupRef.current) {
           setIsLoading(false);
-          console.log('핸드트래킹 초기화 완료');
         }
       } catch (err) {
         console.error('핸드트래킹 초기화 오류:', err);
-        if (mounted) {
+        if (mounted && !cleanupRef.current) {
           if (err instanceof Error) {
             if (err.name === 'NotAllowedError') {
               setError('카메라 권한이 거부되었습니다. 브라우저 설정에서 카메라 접근을 허용해주세요.');
@@ -322,34 +346,62 @@ export default function HandTracking({
       }
     };
 
-    console.log('핸드트래킹 초기화 시작');
     initializeHandTracking();
 
     return () => {
       mounted = false;
-      console.log('컴포넌트 cleanup 시작');
+      cleanupRef.current = true;
+      
+      // 호버 타이머 정리
+      if (hoverStateRef.current.timerRef) {
+        clearTimeout(hoverStateRef.current.timerRef);
+        hoverStateRef.current.timerRef = null;
+      }
       
       // 애니메이션 프레임 취소
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
       }
       
       // 웹캠 스트림 정리
-      if (videoRef.current && videoRef.current.srcObject) {
-        const stream = videoRef.current.srcObject as MediaStream;
-        stream.getTracks().forEach(track => {
-          track.stop();
-          console.log('카메라 트랙 중지됨');
-        });
+      if (streamRef.current) {
+        try {
+          streamRef.current.getTracks().forEach(track => track.stop());
+        } catch (err) {
+          console.warn('스트림 정리 중 오류:', err);
+        }
+        streamRef.current = null;
       }
       
-      // MediaPipe Hands 정리
-      if (handsRef.current) {
-        handsRef.current.close();
-        console.log('MediaPipe Hands 종료됨');
+      // video element srcObject 정리
+      if (videoRef.current && videoRef.current.srcObject) {
+        try {
+          videoRef.current.srcObject = null;
+        } catch (err) {
+          console.warn('비디오 정리 중 오류:', err);
+        }
       }
+      
+      // MediaPipe Hands 정리 (안전하게)
+      if (handsRef.current && isInitializedRef.current) {
+        try {
+          handsRef.current.close();
+        } catch (err) {
+          // MediaPipe가 이미 정리된 경우 무시
+          console.warn('MediaPipe 정리 중 오류 (무시됨):', err);
+        } finally {
+          handsRef.current = null;
+          isInitializedRef.current = false;
+        }
+      }
+      
+      // 상태 완전 리셋
+      setTimeout(() => {
+        cleanupRef.current = false;
+      }, 100);
     };
-  }, [width, height, onPinchDetected, onPinchEnd, widgetAreas, activeWidget]);
+  }, [width, height, onHoverDetected, onHoverEnd, widgetAreas, activeWidget]);
 
   if (error) {
     return (
