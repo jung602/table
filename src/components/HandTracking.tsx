@@ -37,63 +37,6 @@ interface HandResults {
 
 
 
-// 손 뼈대 그리기 함수
-const drawHandSkeleton = (
-  ctx: CanvasRenderingContext2D,
-  landmarks: HandLandmark[],
-  canvasWidth: number,
-  canvasHeight: number
-) => {
-  // 손 연결선 정의 (MediaPipe Hands의 21개 랜드마크 연결)
-  const handConnections = [
-    // 손목에서 각 손가락 시작점으로
-    [0, 1], [0, 5], [0, 9], [0, 13], [0, 17],
-    // 엄지 (THUMB)
-    [1, 2], [2, 3], [3, 4],
-    // 검지 (INDEX)
-    [5, 6], [6, 7], [7, 8],
-    // 중지 (MIDDLE)
-    [9, 10], [10, 11], [11, 12],
-    // 약지 (RING)
-    [13, 14], [14, 15], [15, 16],
-    // 새끼 (PINKY)
-    [17, 18], [18, 19], [19, 20],
-    // 손가락 사이 연결
-    [5, 9], [9, 13], [13, 17]
-  ];
-
-  // 연결선 그리기
-  ctx.strokeStyle = '#00FF00'; // 초록색 선
-  ctx.lineWidth = 2;
-  
-  for (const [startIdx, endIdx] of handConnections) {
-    const start = landmarks[startIdx];
-    const end = landmarks[endIdx];
-    
-    const startX = start.x * canvasWidth;
-    const startY = start.y * canvasHeight;
-    const endX = end.x * canvasWidth;
-    const endY = end.y * canvasHeight;
-    
-    ctx.beginPath();
-    ctx.moveTo(startX, startY);
-    ctx.lineTo(endX, endY);
-    ctx.stroke();
-  }
-
-  // 랜드마크 점들 그리기
-  ctx.fillStyle = '#FF0000'; // 빨간색 점
-  for (let i = 0; i < landmarks.length; i++) {
-    const landmark = landmarks[i];
-    const x = landmark.x * canvasWidth;
-    const y = landmark.y * canvasHeight;
-    
-    ctx.beginPath();
-    ctx.arc(x, y, 3, 0, 6.28318530718);
-    ctx.fill();
-  }
-};
-
 export default function HandTracking({ 
   width = 320, 
   height = 240, 
@@ -230,8 +173,8 @@ export default function HandTracking({
               
               // 검지 끝 위치 가져오기
               const indexTip = landmarks[8];
-              // x 좌표 반전 제거
-              const indexX = indexTip.x;
+              // x 좌표 반전 (미러링된 화면에 맞춤)
+              const indexX = 1 - indexTip.x;
               const indexY = indexTip.y;
               
               // 검지가 어떤 위젯 위에 있는지 확인
@@ -310,9 +253,6 @@ export default function HandTracking({
                 }
               }
 
-              // 손 뼈대 그리기
-              drawHandSkeleton(ctx, landmarks, canvas.width, canvas.height);
-              
               // 검지 끝에 원과 프로그레스바 그리기
               const indexPixelX = indexTip.x * canvas.width;
               const indexPixelY = indexTip.y * canvas.height;
@@ -537,6 +477,7 @@ export default function HandTracking({
         style={{ 
           width: `${width}px`,
           height: `${height}px`,
+          transform: 'scaleX(-1)', // 미러 효과
         }}
       />
       
