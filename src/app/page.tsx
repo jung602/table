@@ -1,7 +1,7 @@
 'use client';
 
 import Image from "next/image";
-import { Background, Widget } from "@/components/ui";
+import { Background, Widget, BackButton } from "@/components/ui";
 import HandTracking from "@/components/HandTracking";
 import { useState, useRef, useCallback } from "react";
 
@@ -22,6 +22,15 @@ export default function Home() {
   }, [isAnimating]);
 
   const handleHoverEnd = useCallback(() => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setActiveWidget(null);
+    
+    // 애니메이션 완료 후 플래그 해제
+    setTimeout(() => setIsAnimating(false), 250);
+  }, [isAnimating]);
+
+  const handleBackButtonHover = useCallback(() => {
     if (isAnimating) return;
     setIsAnimating(true);
     setActiveWidget(null);
@@ -125,6 +134,20 @@ export default function Home() {
             perspective: 1000,
           }} 
         />
+
+        {/* 뒤로가기 버튼 - 위젯이 활성화된 상태에서만 표시 */}
+        {activeWidget && (
+          <BackButton 
+            style={{
+              position: 'absolute',
+              left: 120,
+              top: 120,
+              zIndex: 300,
+              transition: 'opacity 0.25s ease-out',
+              opacity: 1,
+            }}
+          />
+        )}
       </Background>
 
       {/* 핸드트래킹 컴포넌트 - Background 전체 사이즈 */}
@@ -133,6 +156,7 @@ export default function Home() {
         height={1485} 
         onHoverDetected={handleHoverDetected}
         onHoverEnd={handleHoverEnd}
+        onBackButtonHover={handleBackButtonHover}
         activeWidget={activeWidget}
         widgetAreas={[
           { id: 'widget1', x: 60, y: 60, width: 418, height: 418 },
