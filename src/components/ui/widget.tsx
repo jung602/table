@@ -20,18 +20,35 @@ const Widget: React.FC<WidgetProps> = ({
   
   return (
     <div
-      className={`relative p-4 ${className}`}
+      className={`relative ${className}`}
       style={{
         width: widthStyle,
         height: heightStyle,
-        background: 'rgba(255, 255, 255, 0.3)',
-        border: '2px solid rgba(255, 255, 255, 0.8)',
+        background: `
+          linear-gradient(180deg, rgba(255, 255, 255, .3) 0%, rgba(255, 255, 255, 0) 100%),
+        rgba(255, 255, 255, 0)
+        `,
         backdropFilter: 'blur(10px)',
-        borderRadius: '9999px', // max border radius
+        borderRadius: '9999px', // 적당한 기본 border radius
         ...style, // 외부 스타일로 오버라이드 가능
       }}
     >
-      {children}
+      <div
+        className="absolute inset-0 m-[4px]"
+        style={{
+          background: `
+            radial-gradient(circle, rgba(255, 255, 255, 0.05) 24%, rgba(255, 255, 255, 0.2) 100%),
+            linear-gradient(-180deg, rgba(255, 255, 255, 0.05) 73%, rgba(255, 255, 255, 0.1) 100%),
+            linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 100%),
+          #2D363F
+          `,
+          borderRadius: '9999px',
+        }}
+      >
+        <div className="relative h-full">
+          {children}
+        </div>
+      </div>
     </div>
   );
 };

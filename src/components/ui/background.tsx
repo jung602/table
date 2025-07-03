@@ -9,47 +9,49 @@ interface BackgroundProps {
 }
 
 const Background: React.FC<BackgroundProps> = ({
-  width = 1920,
-  height = 1200,
+  width = 2378,
+  height = 1485,
   children,
   className = '',
   style = {},
 }) => {
   const widthStyle = typeof width === 'number' ? `${width}px` : width;
   const heightStyle = typeof height === 'number' ? `${height}px` : height;
-  
-  // width에 따른 동적 border-radius 계산 (13.54% 비율)
-  const calculateBorderRadius = () => {
-    if (typeof width === 'number') {
-      return `${width * 0.1354}px`;
-    } else if (typeof width === 'string' && width.endsWith('px')) {
-      const numericWidth = parseFloat(width);
-      return `${numericWidth * 0.1354}px`;
-    }
-    // 기본값 (1920px의 13.54%)
-    return '260px';
-  };
 
   return (
     <div
-      className={`relative p-16 grid grid-cols-5 grid-rows-3 gap-5 ${className}`}
+      className={`relative ${className}`}
       style={{
         width: widthStyle,
         height: heightStyle,
-        background: 'linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 100%)',
-        border: '6px solid rgba(255, 255, 255, 0.8)',
+        background: `
+          linear-gradient(180deg, rgba(255, 255, 255, .5) 0%, rgba(255, 255, 255, 0) 100%),
+        rgba(255, 255, 255, 0)
+        `,
+        border: '0px solid rgba(255, 255, 255, 0.8)',
         boxShadow: 'inset 0px -5px 30px 0px rgba(255, 255, 255, 0.2)',
         backdropFilter: 'blur(7.5px)',
-        borderRadius: calculateBorderRadius(),
+        borderRadius: '260px',
         ...style, // 외부 스타일로 오버라이드 가능
       }}
     >
-      {/* 5x3 그리드 - 15개 셀 */}
-      {Array.from({ length: 15 }, (_, index) => (
-        <div key={index} className="grid-cell">
-          {Array.isArray(children) ? children[index] : index === 0 ? children : null}
-        </div>
-      ))}
+      {/* 내부 요소 - 2px 작아지는 동일한 스타일, 그리드 제거하고 상대 위치 컨테이너로만 사용 */}
+      <div
+        className="absolute inset-0 m-[4px]"
+        style={{
+          background: `
+            linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 100%),
+            radial-gradient(circle, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, .1) 100%),
+            #2D363F
+          `,
+          border: '0px solid rgba(255, 255, 255, 0.8)',
+          boxShadow: 'inset 0px -5px 30px 0px rgba(255, 255, 255, 0.2)',
+          backdropFilter: 'blur(7.5px)',
+          borderRadius: '260px',
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
 };
