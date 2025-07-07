@@ -9,20 +9,25 @@ interface ClockProps {
 }
 
 export default function Clock({ size = 300, className = '', style }: ClockProps) {
-  const [time, setTime] = useState(new Date());
+  const [startTime] = useState(new Date()); // 페이지 로드 시점 고정
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTime(new Date());
+      setCurrentTime(new Date());
     }, 1000);
 
     return () => clearInterval(interval);
   }, []);
 
-  // 시침과 분침은 7시 정각으로 고정, 초침만 실시간
-  const hours = 7; // 항상 7시 고정
-  const minutes = 0; // 항상 0분 고정
-  const seconds = time.getSeconds(); // 실시간 초
+  // 페이지 로드 시점부터 경과된 시간을 계산
+  const elapsedSeconds = Math.floor((currentTime.getTime() - startTime.getTime()) / 1000);
+  const totalMinutes = Math.floor(elapsedSeconds / 60);
+  const seconds = elapsedSeconds % 60;
+
+  // 7시부터 시작해서 계속 증가
+  const hours = 7 + Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
 
   // 각도 계산 (7시 방향)
   const hourAngle = (hours * 30) + (minutes * 0.5) - 90; // 30도 * 시간 + 분에 따른 보정
@@ -95,6 +100,23 @@ export default function Clock({ size = 300, className = '', style }: ClockProps)
         viewBox={`0 0 ${size} ${size}`}
         className="transform-gpu relative z-10"
       >
+        {/* 메타볼 효과를 위한 필터 정의 */}
+        <defs>
+          <filter id="metaball" x="-20%" y="-20%" width="140%" height="140%">
+            <feMorphology operator="dilate" radius="2"/>
+            <feGaussianBlur stdDeviation="6" result="blur"/>
+            <feColorMatrix 
+              in="blur" 
+              type="matrix" 
+              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10"
+              result="contrast"
+            />
+            <feComposite in="SourceGraphic" in2="contrast" operator="over"/>
+          </filter>
+        </defs>
+        
+        {/* 메타볼 효과를 받을 그룹 */}
+        <g filter="url(#metaball)">
       
       {/* 분침 */}
        <line
@@ -106,22 +128,22 @@ export default function Clock({ size = 300, className = '', style }: ClockProps)
           strokeWidth="20"
           strokeLinecap="round"
           style={{
-            backdropFilter: 'blur(50px)',
+            backdropFilter: 'blur(25px)',
             filter: 'drop-shadow(0 2px 10px rgba(0, 0, 0, 0.1))'
           }}
         />
-       <circle
+       {/*<circle
           cx={radius + minuteHand.x}
           cy={radius + minuteHand.y}
           r="5"
           fill="rgba(0, 255, 255, .7)"
         />
-       <path
+        <path
           d={`M ${radius + minuteHand.x} ${radius + minuteHand.y} L ${radius + innerMinuteHand.x} ${radius + innerMinuteHand.y}`}
           stroke="rgba(0, 255, 255, .7)"
           strokeWidth="10"
           strokeLinecap="butt"
-         />
+         />*/}
 
         {/* 시침 */}
         <line
@@ -129,40 +151,45 @@ export default function Clock({ size = 300, className = '', style }: ClockProps)
           y1={radius}
           x2={radius + hourHand.x}
           y2={radius + hourHand.y}
-          stroke="rgba(255, 255, 255, 1)"
+          stroke="rgba(255, 255, 255, .7)"
           strokeWidth="20"
           strokeLinecap="round"
           style={{
             filter: 'drop-shadow(0 2px 10px rgba(0, 0, 0, 0.1))'
           }}
         />
-        <circle
+       {/*  <circle
           cx={radius + hourHand.x}
           cy={radius + hourHand.y}
           r="5"
           fill="rgba(0, 255, 255, .7)"
         />
-        <path
+       <path
           d={`M ${radius + hourHand.x} ${radius + hourHand.y} L ${radius + innerHourHand.x} ${radius + innerHourHand.y}`}
           stroke="rgba(0, 255, 255, .7)"
           strokeWidth="10"
           strokeLinecap="butt"
-         />
+         /> */}
 
 
-        {/* 초침 - 원 외곽을 따라 도는 동그라미 */}
-        <circle
-          cx={radius + secondCirclePosition.x}
-          cy={radius + secondCirclePosition.y}
-          r="16"
-          fill="rgba(255, 255, 255, 0.9)"
-        />
+          {/* 초침 - 원 외곽을 따라 도는 동그라미 */}
+          <circle
+            cx={radius + secondCirclePosition.x}
+            cy={radius + secondCirclePosition.y}
+            r="20"
+            fill="rgba(255, 255, 255, 0.7)"
+            style={{
+              backdropFilter: 'blur(25px)',
+            }}
+          />
+        </g>
 
+        {/* 중앙 점 (메타볼 효과 제외) */}
         <circle
           cx={radius}
           cy={radius}
-          r="4"
-          fill="rgba(75, 75, 75, 1)"
+          r="6"
+          fill="rgba(8, 17, 79, 1)"
         />
       </svg>
     </div>
