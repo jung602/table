@@ -18,6 +18,7 @@ interface HandTrackingProps {
   onBackButtonHover?: () => void;
   widgetAreas?: WidgetArea[];
   activeWidget?: string | null;
+  disabledHoverWidgets?: string[];
 }
 
 interface HandLandmark {
@@ -44,7 +45,8 @@ export default function HandTracking({
   onHoverEnd,
   onBackButtonHover,
   widgetAreas = [],
-  activeWidget
+  activeWidget,
+  disabledHoverWidgets = []
 }: HandTrackingProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -201,8 +203,8 @@ export default function HandTracking({
                 pixelY <= backButtonArea.y + backButtonArea.height;
 
               // 호버 상태 관리
-              if (detectedWidget && !cleanupRef.current && mounted && !activeWidget) {
-                // 위젯 위에 검지가 있음 (위젯이 활성화되어 있지 않을 때만)
+              if (detectedWidget && !cleanupRef.current && mounted && !activeWidget && !disabledHoverWidgets.includes(detectedWidget.id)) {
+                // 위젯 위에 검지가 있음 (위젯이 활성화되어 있지 않을 때만, 비활성화된 위젯 제외)
                 if (!hoverStateRef.current.isHovering || hoverStateRef.current.widgetId !== detectedWidget.id) {
                   // 새로운 호버 시작
                   if (hoverStateRef.current.timerRef) {
@@ -213,13 +215,13 @@ export default function HandTracking({
                   hoverStateRef.current.widgetId = detectedWidget.id;
                   hoverStateRef.current.startTime = Date.now();
                   
-                  // 3초 후 선택
+                  // 2초 후 선택
                   hoverStateRef.current.timerRef = window.setTimeout(() => {
                     if (hoverStateRef.current.widgetId === detectedWidget.id && !cleanupRef.current && mounted) {
                       // 위젯 활성화 (토글 기능 제거)
                       onHoverDetected?.(detectedWidget.id);
                     }
-                  }, 3000);
+                  }, 2000);
                 }
               } else if (isOnBackButton && !cleanupRef.current && mounted) {
                 // 뒤로가기 버튼 위에 검지가 있음
@@ -233,12 +235,12 @@ export default function HandTracking({
                   hoverStateRef.current.widgetId = 'back-button';
                   hoverStateRef.current.startTime = Date.now();
                   
-                  // 3초 후 뒤로가기
+                  // 2초 후 뒤로가기
                   hoverStateRef.current.timerRef = window.setTimeout(() => {
                     if (hoverStateRef.current.widgetId === 'back-button' && !cleanupRef.current && mounted) {
                       onBackButtonHover?.();
                     }
-                  }, 3000);
+                  }, 2000);
                 }
               } else {
                 // 위젯 밖으로 벗어남 또는 위젯이 이미 활성화됨
@@ -260,7 +262,7 @@ export default function HandTracking({
               // 호버 중이면 프로그레스바 표시
               if (hoverStateRef.current.isHovering && hoverStateRef.current.startTime) {
                 const elapsed = Date.now() - hoverStateRef.current.startTime;
-                const progress = Math.min(elapsed / 3000, 1); // 3초 동안 0에서 1로
+                const progress = Math.min(elapsed / 2000, 1); // 2초 동안 0에서 1로
                 
                 // 프로그레스에 따른 색상 계산 (흰색 → 노란색 → 초록색)
                 let r, g, b;
@@ -430,7 +432,7 @@ export default function HandTracking({
         cleanupRef.current = false;
       }, 100);
     };
-  }, [width, height, onHoverDetected, onHoverEnd, onBackButtonHover, widgetAreas, activeWidget]);
+  }, [width, height, onHoverDetected, onHoverEnd, onBackButtonHover, widgetAreas, activeWidget, disabledHoverWidgets]);
 
   if (error) {
     return (
