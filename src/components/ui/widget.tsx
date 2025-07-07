@@ -28,7 +28,7 @@ const Widget: React.FC<WidgetProps> = ({
         width: widthStyle,
         height: heightStyle,
         background: `
-          linear-gradient(180deg, rgba(255, 255, 255, .3) 0%, rgba(255, 255, 255, 0) 100%),
+          linear-gradient(180deg, rgba(255, 255, 255, .5) 0%, rgba(255, 255, 255, 0) 100%),
         rgba(255, 255, 255, 0)
         `,
         backdropFilter: 'blur(10px)',
@@ -37,7 +37,7 @@ const Widget: React.FC<WidgetProps> = ({
       }}
     >
       <div
-        className="absolute inset-0 m-[4px]"
+        className="absolute inset-0 m-[2px]"
         style={{
           background: `
             radial-gradient(circle, rgba(255, 255, 255, 0.05) 24%, rgba(255, 255, 255, 0.2) 100%),

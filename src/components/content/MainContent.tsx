@@ -1,6 +1,7 @@
 'use client';
 
 import { Widget, BackButton } from "@/components/ui";
+import { Clock } from "@/components/content";
 
 interface MainContentProps {
   activeWidget: string | null;
@@ -34,8 +35,8 @@ export default function MainContent({ activeWidget }: MainContentProps) {
       <Widget 
         style={{ 
           position: 'absolute',
-          left: activeWidget === 'widget1' ? 0 : 60,
-          top: activeWidget === 'widget1' ? 0 : 60,
+          left: activeWidget === 'widget1' ? 0 : 64,
+          top: activeWidget === 'widget1' ? 0 : 64,
           width: activeWidget === 'widget1' ? 2378 : 418,
           height: activeWidget === 'widget1' ? 1485 : 418,
           borderRadius: 260,
@@ -46,14 +47,21 @@ export default function MainContent({ activeWidget }: MainContentProps) {
           backfaceVisibility: 'hidden',
           perspective: 1000,
         }} 
-      />
+      >
+        <div className="flex items-center justify-center h-full p-4">
+          <Clock 
+            size={418}
+            className="transition-all duration-300"
+          />
+        </div>
+      </Widget>
       
       {/* 좌측 하단 1x2 위젯 */}
       <Widget 
         style={{ 
           position: 'absolute',
-          left: activeWidget === 'widget2' ? 0 : 60,
-          top: activeWidget === 'widget2' ? 0 : 524,
+          left: activeWidget === 'widget2' ? 0 : 64,
+          bottom: activeWidget === 'widget2' ? 0 : 64,
           width: activeWidget === 'widget2' ? 2378 : 418,
           height: activeWidget === 'widget2' ? 1485 : 877,
           borderRadius: 260,
@@ -70,8 +78,8 @@ export default function MainContent({ activeWidget }: MainContentProps) {
       <Widget 
         style={{ 
           position: 'absolute',
-          right: activeWidget === 'widget3' ? 0 : 60,
-          top: activeWidget === 'widget3' ? 0 : 60,
+          right: activeWidget === 'widget3' ? 0 : 64,
+          top: activeWidget === 'widget3' ? 0 : 64,
           width: activeWidget === 'widget3' ? 2378 : 418,
           height: activeWidget === 'widget3' ? 1485 : 877,
           borderRadius: 260,
@@ -88,8 +96,8 @@ export default function MainContent({ activeWidget }: MainContentProps) {
       <Widget 
         style={{ 
           position: 'absolute',
-          right: activeWidget === 'widget4' ? 0 : 60,
-          bottom: activeWidget === 'widget4' ? 0 : 60,
+          right: activeWidget === 'widget4' ? 0 : 64,
+          bottom: activeWidget === 'widget4' ? 0 : 64,
           width: activeWidget === 'widget4' ? 2378 : 418,
           height: activeWidget === 'widget4' ? 1485 : 418,
           borderRadius: 260,

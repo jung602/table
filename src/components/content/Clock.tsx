@@ -1,0 +1,137 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+
+interface ClockProps {
+  size?: number;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+export default function Clock({ size = 300, className = '', style }: ClockProps) {
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // 시침과 분침은 7시 정각으로 고정, 초침만 실시간
+  const hours = 7; // 항상 7시 고정
+  const minutes = 0; // 항상 0분 고정
+  const seconds = time.getSeconds(); // 실시간 초
+
+  // 각도 계산 (7시 방향)
+  const hourAngle = (hours * 30) + (minutes * 0.5) - 90; // 30도 * 시간 + 분에 따른 보정
+  const minuteAngle = (minutes * 6) + (seconds * 0.1) - 90; // 6도 * 분 + 초에 따른 보정
+  const secondAngle = (seconds * 6) - 90; // 6도 * 초
+
+  const radius = size / 2;
+  const hourHandLength = radius * 0.5;
+  const minuteHandLength = radius * 0.8;
+  const secondCircleRadius = radius - 32; // 초침 동그라미가 도는 반지름 (외곽에서 8 여유 + 동그라미 반지름 16)
+
+  // 시계 바늘 좌표 계산
+  const getHandPosition = (angle: number, length: number) => {
+    const radian = (angle * Math.PI) / 180;
+    const x = Math.cos(radian) * length;
+    const y = Math.sin(radian) * length;
+    return { x, y };
+  };
+
+  const hourHand = getHandPosition(hourAngle, hourHandLength);
+  const minuteHand = getHandPosition(minuteAngle, minuteHandLength);
+  const secondCirclePosition = getHandPosition(secondAngle, secondCircleRadius);
+
+  return (
+    <div className={`relative ${className}`} style={style}>
+      {/* 배경 이미지 - 인라인 SVG */}
+      <div className="absolute left-24 top-14">
+        <svg width="260" height="326" viewBox="0 0 220 276" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2.58105" y="225" width="259.808" height="100.674" rx="50.3371" transform="rotate(-60 2.58105 225)" fill="url(#paint0_linear_1034_1323)"/>
+          <foreignObject x="-50" y="-31.9307" width="301.348" height="200.674">
+            <div style={{backdropFilter: 'blur(25px)', clipPath: 'url(#bgblur_0_1034_1323_clip_path)', height: '100%', width: '100%'}}></div>
+          </foreignObject>
+          <g data-figma-bg-blur-radius="50">
+            <rect y="18.0693" width="201.348" height="100.674" rx="50.3371" fill="white" fillOpacity="0.1"/>
+            <rect y="18.0693" width="201.348" height="100.674" rx="50.3371" fill="url(#paint1_linear_1034_1323)" fillOpacity="0.2"/>
+            <rect y="18.0693" width="201.348" height="100.674" rx="50.3371" fill="url(#paint2_linear_1034_1323)" fillOpacity="0.2"/>
+            <rect y="18.0693" width="201.348" height="100.674" rx="50.3371" fill="url(#paint3_radial_1034_1323)" fillOpacity="0.2"/>
+          </g>
+          <defs>
+            <clipPath id="bgblur_0_1034_1323_clip_path" transform="translate(50 31.9307)">
+              <rect y="18.0693" width="201.348" height="100.674" rx="50.3371"/>
+            </clipPath>
+            <linearGradient id="paint0_linear_1034_1323" x1="346.381" y1="269.478" x2="-13.8858" y2="269.478" gradientUnits="userSpaceOnUse">
+              <stop stopColor="white"/>
+              <stop offset="0.120192" stopColor="#00D9FF"/>
+              <stop offset="0.888166" stopColor="#0040FF"/>
+              <stop offset="1" stopColor="#9747FF"/>
+            </linearGradient>
+            <linearGradient id="paint1_linear_1034_1323" x1="100.674" y1="18.0693" x2="100.674" y2="118.743" gradientUnits="userSpaceOnUse">
+              <stop stopColor="white" stopOpacity="0"/>
+              <stop offset="1" stopColor="white"/>
+            </linearGradient>
+            <linearGradient id="paint2_linear_1034_1323" x1="100.674" y1="18.0693" x2="100.674" y2="118.743" gradientUnits="userSpaceOnUse">
+              <stop offset="0.73" stopColor="white" stopOpacity="0.2"/>
+              <stop offset="1" stopColor="white"/>
+            </linearGradient>
+            <radialGradient id="paint3_radial_1034_1323" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(100.674 68.4064) rotate(90) scale(50.3371 100.674)">
+              <stop offset="0.24" stopColor="white" stopOpacity="0.2"/>
+              <stop offset="0.6" stopColor="white" stopOpacity="0.5"/>
+            </radialGradient>
+          </defs>
+        </svg>
+      </div>
+      
+      <svg
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        className="transform-gpu relative z-10"
+      >
+    
+
+        {/* 시침 */}
+        <line
+          x1={radius}
+          y1={radius}
+          x2={radius + hourHand.x}
+          y2={radius + hourHand.y}
+          stroke="rgba(255, 255, 255, 1)"
+          strokeWidth="16"
+          strokeLinecap="round"
+        />
+
+        {/* 분침 */}
+        <line
+          x1={radius}
+          y1={radius}
+          x2={radius + minuteHand.x}
+          y2={radius + minuteHand.y}
+          stroke="rgba(255, 255, 255, 1)"
+          strokeWidth="16"
+          strokeLinecap="round"
+        />
+
+        {/* 초침 - 원 외곽을 따라 도는 동그라미 */}
+        <circle
+          cx={radius + secondCirclePosition.x}
+          cy={radius + secondCirclePosition.y}
+          r="16"
+          fill="rgba(255, 255, 255, 0.9)"
+        />
+
+        <circle
+          cx={radius}
+          cy={radius}
+          r="4"
+          fill="rgba(75, 75, 75, 1)"
+        />
+      </svg>
+    </div>
+  );
+} 
