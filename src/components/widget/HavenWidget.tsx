@@ -31,7 +31,7 @@ export default function HavenWidget({ activeWidget }: HavenWidgetProps) {
           size={418}
           className="transition-all duration-300 rounded-full blur-3xl"
           blendMode="normal"
-          saturation={1.5}
+          saturation={2}
         />
         {/* 텍스트 오버레이 */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
