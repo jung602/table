@@ -9,7 +9,6 @@ import { useState, useRef, useCallback } from "react";
 export default function Home() {
   const [activeWidget, setActiveWidget] = useState<string | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [disabledHoverWidgets, setDisabledHoverWidgets] = useState<string[]>([]);
   
   // RAF를 위한 ref
   const rafRef = useRef<number | null>(null);
@@ -44,10 +43,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">
       <Background>
-        <MainContent 
-          activeWidget={activeWidget} 
-          onDisabledHoverWidgetsChange={setDisabledHoverWidgets}
-        />
+        <MainContent activeWidget={activeWidget} />
       </Background>
 
       {/* 핸드트래킹 컴포넌트 - Background 전체 사이즈 */}
@@ -58,7 +54,6 @@ export default function Home() {
         onHoverEnd={handleHoverEnd}
         onBackButtonHover={handleBackButtonHover}
         activeWidget={activeWidget}
-        disabledHoverWidgets={disabledHoverWidgets}
         widgetAreas={[
           { id: 'widget1', x: 60, y: 60, width: 418, height: 418 },
           { id: 'widget2', x: 60, y: 524, width: 418, height: 877 },

@@ -18,7 +18,6 @@ interface HandTrackingProps {
   onBackButtonHover?: () => void;
   widgetAreas?: WidgetArea[];
   activeWidget?: string | null;
-  disabledHoverWidgets?: string[];
 }
 
 interface HandLandmark {
@@ -45,8 +44,7 @@ export default function HandTracking({
   onHoverEnd,
   onBackButtonHover,
   widgetAreas = [],
-  activeWidget,
-  disabledHoverWidgets = []
+  activeWidget
 }: HandTrackingProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -203,8 +201,8 @@ export default function HandTracking({
                 pixelY <= backButtonArea.y + backButtonArea.height;
 
               // 호버 상태 관리
-              if (detectedWidget && !cleanupRef.current && mounted && !activeWidget && !disabledHoverWidgets.includes(detectedWidget.id)) {
-                // 위젯 위에 검지가 있음 (위젯이 활성화되어 있지 않을 때만, 비활성화된 위젯 제외)
+              if (detectedWidget && !cleanupRef.current && mounted && !activeWidget) {
+                // 위젯 위에 검지가 있음 (위젯이 활성화되어 있지 않을 때만)
                 if (!hoverStateRef.current.isHovering || hoverStateRef.current.widgetId !== detectedWidget.id) {
                   // 새로운 호버 시작
                   if (hoverStateRef.current.timerRef) {
@@ -432,7 +430,7 @@ export default function HandTracking({
         cleanupRef.current = false;
       }, 100);
     };
-  }, [width, height, onHoverDetected, onHoverEnd, onBackButtonHover, widgetAreas, activeWidget, disabledHoverWidgets]);
+  }, [width, height, onHoverDetected, onHoverEnd, onBackButtonHover, widgetAreas, activeWidget]);
 
   if (error) {
     return (

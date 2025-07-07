@@ -2,24 +2,12 @@
 
 import { BackButton } from "@/components/ui";
 import { ClockWidget, SpotifyWidget, CoolWidget, HavenWidget } from "@/components/widget";
-import { useEffect, useMemo } from "react";
 
 interface MainContentProps {
   activeWidget: string | null;
-  onDisabledHoverWidgetsChange?: (widgets: string[]) => void;
 }
 
-export default function MainContent({ 
-  activeWidget, 
-  onDisabledHoverWidgetsChange
-}: MainContentProps) {
-  // MainContent에서 호버 비활성화 위젯들을 관리
-  const disabledHoverWidgets = useMemo(() => ['widget1', 'widget4'], []);
-  
-  // 부모에게 비활성화 위젯 목록 전달
-  useEffect(() => {
-    onDisabledHoverWidgetsChange?.(disabledHoverWidgets);
-  }, [onDisabledHoverWidgetsChange, disabledHoverWidgets]);
+export default function MainContent({ activeWidget }: MainContentProps) {
   return (
     <>
       {/* 중앙 텍스트 */}
