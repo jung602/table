@@ -57,11 +57,11 @@ export default function HavenWidget({ activeWidget }: HavenWidgetProps) {
             </svg>
           </div>
           <div
-            className="text-[40px] font-bold bg-clip-text text-transparent"
+            className="text-[42px] font-bold bg-clip-text text-transparent"
             style={{
               fontFamily: 'OneUISansGUI',
               fontWeight: 700,
-              lineHeight: '42px',
+              lineHeight: '44px',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               textShadow: '0 -1px 0 rgba(0,12,85,0.8), 0 1px 2px rgba(106,182,255,0.5)',
