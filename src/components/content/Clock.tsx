@@ -30,7 +30,7 @@ export default function Clock({ size = 300, className = '', style }: ClockProps)
   const secondAngle = (seconds * 6) - 90; // 6도 * 초
 
   const radius = size / 2;
-  const hourHandLength = radius * 0.5;
+  const hourHandLength = radius * 0.4;
   const minuteHandLength = radius * 0.8;
   const secondCircleRadius = radius - 32; // 초침 동그라미가 도는 반지름 (외곽에서 8 여유 + 동그라미 반지름 16)
 
@@ -44,6 +44,8 @@ export default function Clock({ size = 300, className = '', style }: ClockProps)
 
   const hourHand = getHandPosition(hourAngle, hourHandLength);
   const minuteHand = getHandPosition(minuteAngle, minuteHandLength);
+  const innerMinuteHand = getHandPosition(minuteAngle, minuteHandLength * 0.3); // 하늘색 분침 끝 지점 (중앙에 가까움)
+  const innerHourHand = getHandPosition(hourAngle, hourHandLength * 0.3); // 하늘색 시침 끝 지점 (중앙에 가까움)
   const secondCirclePosition = getHandPosition(secondAngle, secondCircleRadius);
 
   return (
@@ -93,7 +95,33 @@ export default function Clock({ size = 300, className = '', style }: ClockProps)
         viewBox={`0 0 ${size} ${size}`}
         className="transform-gpu relative z-10"
       >
-    
+      
+      {/* 분침 */}
+       <line
+          x1={radius}
+          y1={radius}
+          x2={radius + minuteHand.x}
+          y2={radius + minuteHand.y}
+          stroke="rgba(255, 255, 255, .7)"
+          strokeWidth="20"
+          strokeLinecap="round"
+          style={{
+            backdropFilter: 'blur(50px)',
+            filter: 'drop-shadow(0 2px 10px rgba(0, 0, 0, 0.1))'
+          }}
+        />
+       <circle
+          cx={radius + minuteHand.x}
+          cy={radius + minuteHand.y}
+          r="5"
+          fill="rgba(0, 255, 255, .7)"
+        />
+       <path
+          d={`M ${radius + minuteHand.x} ${radius + minuteHand.y} L ${radius + innerMinuteHand.x} ${radius + innerMinuteHand.y}`}
+          stroke="rgba(0, 255, 255, .7)"
+          strokeWidth="10"
+          strokeLinecap="butt"
+         />
 
         {/* 시침 */}
         <line
@@ -102,20 +130,25 @@ export default function Clock({ size = 300, className = '', style }: ClockProps)
           x2={radius + hourHand.x}
           y2={radius + hourHand.y}
           stroke="rgba(255, 255, 255, 1)"
-          strokeWidth="16"
+          strokeWidth="20"
           strokeLinecap="round"
+          style={{
+            filter: 'drop-shadow(0 2px 10px rgba(0, 0, 0, 0.1))'
+          }}
         />
+        <circle
+          cx={radius + hourHand.x}
+          cy={radius + hourHand.y}
+          r="5"
+          fill="rgba(0, 255, 255, .7)"
+        />
+        <path
+          d={`M ${radius + hourHand.x} ${radius + hourHand.y} L ${radius + innerHourHand.x} ${radius + innerHourHand.y}`}
+          stroke="rgba(0, 255, 255, .7)"
+          strokeWidth="10"
+          strokeLinecap="butt"
+         />
 
-        {/* 분침 */}
-        <line
-          x1={radius}
-          y1={radius}
-          x2={radius + minuteHand.x}
-          y2={radius + minuteHand.y}
-          stroke="rgba(255, 255, 255, 1)"
-          strokeWidth="16"
-          strokeLinecap="round"
-        />
 
         {/* 초침 - 원 외곽을 따라 도는 동그라미 */}
         <circle

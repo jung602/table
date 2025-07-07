@@ -1,7 +1,7 @@
 'use client';
 
 import { Widget, BackButton } from "@/components/ui";
-import { Clock } from "@/components/content";
+import { Clock, Gradient } from "@/components/content";
 
 interface MainContentProps {
   activeWidget: string | null;
@@ -107,8 +107,16 @@ export default function MainContent({ activeWidget }: MainContentProps) {
           transform: 'translate3d(0, 0, 0)',
           backfaceVisibility: 'hidden',
           perspective: 1000,
+          overflow: 'hidden',
         }} 
-      />
+      >
+        <div className="flex items-center justify-center h-full">
+          <Gradient 
+            size={418}
+            className="transition-all duration-300"
+          />
+        </div>
+      </Widget>
 
       {/* 뒤로가기 버튼 - 위젯이 활성화된 상태에서만 표시 */}
       {activeWidget && (
