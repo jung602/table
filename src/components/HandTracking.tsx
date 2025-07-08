@@ -432,14 +432,14 @@ export default function HandTracking({
     };
   }, [width, height, onHoverDetected, onHoverEnd, onBackButtonHover, widgetAreas, activeWidget]);
 
-  if (error) {
-    return (
-      <div className="fixed top-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-lg z-50 max-w-xs">
-        <p className="text-sm font-bold mb-2">핸드트래킹 오류</p>
-        <p className="text-xs">{error}</p>
-      </div>
-    );
-  }
+  // if (error) {
+  //   return (
+  //     <div className="fixed top-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-lg z-50 max-w-xs">
+  //       <p className="text-sm font-bold mb-2">핸드트래킹 오류</p>
+  //       <p className="text-xs">{error}</p>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div 
@@ -452,12 +452,12 @@ export default function HandTracking({
         transform: 'translate(-50%, -50%)'
       }}
     >
-      {isLoading && (
+      {/* {isLoading && (
         <div className="absolute top-4 left-4 bg-black bg-opacity-75 text-white text-xs px-3 py-2 rounded z-50">
           <div className="mb-1">핸드트래킹</div>
           <div>{loadingMessage}</div>
         </div>
-      )}
+      )} */}
       
       {/* 숨겨진 비디오 엘리먼트 */}
       <video
@@ -482,9 +482,9 @@ export default function HandTracking({
       />
       
       {/* 인포 텍스트 */}
-      <div className="absolute bottom-4 left-4 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
+      {/* <div className="absolute bottom-4 left-4 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
         Hand Tracking: {width}x{height}
-      </div>
+      </div> */}
     </div>
   );
 } 

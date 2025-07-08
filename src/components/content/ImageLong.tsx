@@ -19,7 +19,7 @@ export default function ImageLong({
   className = '', 
   blendMode = 'normal',
   saturation = 1.4, // 기본 채도 1.4배
-  src = '/image/gradientLong.svg', // 기본 이미지
+  src = '/image/gradientLong2.svg', // 기본 이미지
   overlayImage = '/image/gradientOverlayLong.svg', // 기본 오버레이 이미지
   style = {}
 }: ImageLongProps) {
