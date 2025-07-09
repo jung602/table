@@ -68,6 +68,20 @@ export default function CoolWidget({ activeWidget }: CoolWidgetProps) {
           }}
         >
         </div>
+        <div
+          className="absolute top-[200px] left-1/2 transform -translate-x-1/2 blur-[50px]"
+          style={{
+            width: '80%',
+            height: '20%',
+            backgroundImage: 'url(/image/topGradient.svg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center top',
+            backgroundRepeat: 'no-repeat',
+            opacity: 0.5,
+            mixBlendMode: 'screen',
+          }}
+        >
+        </div>
 
 
         {/* 그라디언트 영역 위 텍스트 */}
@@ -152,7 +166,7 @@ export default function CoolWidget({ activeWidget }: CoolWidgetProps) {
 
 
         {/* 내부 카드 */}
-        <div 
+        <div
         className="absolute"
         style={{
           width: 370,
@@ -160,11 +174,17 @@ export default function CoolWidget({ activeWidget }: CoolWidgetProps) {
           top: '50%',
           left: '50%',
           transform: 'translateX(-50%) translateY(-35%)',
-          background: 'rgba(65,75,82,.3)',
-          border: '4px solid rgba(255, 255, 255, 0)',
-          padding: '16px',
-        }}
-      >
+          background: 'linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 20%)',
+          padding: '2px',
+        }}>
+        <div 
+          style={{
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: '48px',
+                  background: 'rgba(65,75,82,0.4)',
+                  padding: '16px',
+                }}>
           <div
             style={{
               height: '300px',
@@ -194,6 +214,7 @@ export default function CoolWidget({ activeWidget }: CoolWidgetProps) {
               >
                 21/07/2025
               </p>
+          </div>
           </div>
 
         {/* 페이지네이션 인디케이터 
