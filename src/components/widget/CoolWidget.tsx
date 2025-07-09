@@ -174,17 +174,12 @@ export default function CoolWidget({ activeWidget }: CoolWidgetProps) {
           top: '50%',
           left: '50%',
           transform: 'translateX(-50%) translateY(-35%)',
-          background: 'linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 20%)',
-          padding: '2px',
+          backgroundImage: 'url(/image/backGroundCard.svg)',
+          backgroundSize: '100% 100%',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          padding: '16px',
         }}>
-        <div 
-          style={{
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: '48px',
-                  background: 'rgba(65,75,82,0.4)',
-                  padding: '16px',
-                }}>
           <div
             style={{
               height: '300px',
@@ -214,7 +209,7 @@ export default function CoolWidget({ activeWidget }: CoolWidgetProps) {
               >
                 21/07/2025
               </p>
-          </div>
+
           </div>
 
         {/* 페이지네이션 인디케이터 
