@@ -3,6 +3,7 @@
 import { Widget } from "@/components/baseUI";
 import { useWidgetAnimation } from "@/utils/widgetAnimations";
 import type { WidgetAnimationState } from "@/utils/widgetAnimations";
+import { ImageLong } from "../content";
 
 interface GalleryWidgetProps {
   activeWidget: string | null;
@@ -26,8 +27,36 @@ export default function GalleryWidget({
 
   return (
     <Widget style={style}>
-      <div className="relative h-full w-full">
-        {/* 내부 컨텐츠는 여기에 추가하세요 */}
+      <div className="relative w-full h-full m-[-2px]">
+        <ImageLong 
+          src="/image/africa.png"
+          overlayImage="none"
+        /> 
+                 <div className="absolute top-[42px] left-1/2 transform -translate-x-1/2">
+           <img src="/icons/gallery.svg" alt="Gallery" width="54" height="54" />
+         </div>
+        <div className="z-20 text-center absolute bottom-[80px] left-1/2 transform -translate-x-1/2">
+          <div 
+            className="z-20 text-[42px] text-white mb-1"
+            style={{
+              fontFamily: 'OneUISansGUI',
+              fontWeight: 700,
+              lineHeight: '54px',
+            }}
+          >
+            Africa
+          </div>
+          <div 
+            className="z-20 text-[32px] text-white opacity-70"
+            style={{
+              fontFamily: 'OneUISansGUI',
+              fontWeight: 400,
+              lineHeight: '32px',
+            }}
+          >
+            Last Month
+          </div>
+        </div>
       </div>
     </Widget>
   );

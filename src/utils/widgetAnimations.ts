@@ -64,7 +64,7 @@ export const ANIMATION_PRESETS = {
 } as const;
 
 // 위젯 타입 정의
-export type WidgetType = 'clock' | 'spotify' | 'cool' | 'haven' | 'notification' | 'settings' | 'gallery';
+export type WidgetType = 'clock' | 'spotify' | 'cool' | 'haven' | 'notification' | 'settings' | 'gallery' | 'news' | 'health';
 
 // 위젯 기본 설정
 export const WIDGET_CONFIGS = {
@@ -123,6 +123,22 @@ export const WIDGET_CONFIGS = {
     baseSize: { width: 418, height: 877 },
     expandedSize: { width: 2378, height: 1485 },
     basePosition: { left: 64, top: 64 },
+  },
+  news: {
+    id: 'news',
+    side: 'right-replacement',
+    position: 'top',
+    baseSize: { width: 877, height: 877 },
+    expandedSize: { width: 2378, height: 1485 },
+    basePosition: { left: 64, top: 64 },
+  },
+  health: {
+    id: 'health',
+    side: 'right-replacement',
+    position: 'bottom-left',
+    baseSize: { width: 877, height: 418 },
+    expandedSize: { width: 2378, height: 1485 },
+    basePosition: { left: 64, top: 961 },
   },
 } as const;
 
@@ -183,7 +199,7 @@ export class WidgetAnimationController {
       case 'settings':
         return {
           ...this.calculateSettingsPosition(rightWidgetsOpacity),
-          top: 64 + 877 + 20  // GalleryWidget 높이 + 간격
+          bottom: 64  // GalleryWidget 높이 + 간격
         };
         
       case 'gallery':
@@ -192,6 +208,19 @@ export class WidgetAnimationController {
           top: 64
         };
         
+      case 'news':
+        return {
+          ...this.calculateNewsPosition(rightWidgetsOpacity),
+          bottom: 64
+        };
+        
+      case 'health':
+        return {
+          ...this.calculateHealthPosition(rightWidgetsOpacity),
+          top: 64
+        };
+        
+
       default:
         return {};
     }
@@ -201,7 +230,7 @@ export class WidgetAnimationController {
   private static calculateLeftWidgetPosition(rightWidgetsOpacity: number): WidgetPosition {
     if (rightWidgetsOpacity === 0) {
       // 기존: right: 522 → left: 1438 (2378 - 522 - 418)
-      return { left: 1438 };
+      return { left: 1438 + 64 };
     }
     return { left: 64 }; // 기본 위치
   }
@@ -219,8 +248,7 @@ export class WidgetAnimationController {
   // 알림 위젯 위치 계산
   private static calculateNotificationPosition(leftWidgetsOpacity: number): WidgetPosition {
     if (leftWidgetsOpacity === 0) {
-      // 기존: left: 522 + 40 + 418 = left: 980 → 그대로 유지
-      return { left: 982 };
+      return { left: 956 };
     }
     // 기존: right: 64 → left: 1896 (2378 - 64 - 418)
     return { left: 1896 };
@@ -229,8 +257,7 @@ export class WidgetAnimationController {
   // 날씨 위젯 위치 계산
   private static calculateSettingsPosition(rightWidgetsOpacity: number): WidgetPosition {
     if (rightWidgetsOpacity === 0) {
-      // 기존: right: 522 + 40 + 418 = right: 980 → left: 980 (2378 - 980 - 418)
-      return { left: 982 };
+      return { left: 956 +64 };
     }
     return { left: 64 }; // 기본 위치
   }
@@ -238,11 +265,30 @@ export class WidgetAnimationController {
   // 갤러리 위젯 위치 계산 (WeatherWidget 위에 배치)
   private static calculateGalleryPosition(rightWidgetsOpacity: number): WidgetPosition {
     if (rightWidgetsOpacity === 0) {
-      // 기존: right: 522 + 40 + 418 = right: 980 → left: 980 (2378 - 980 - 418)
-      return { left: 982 };
+      return { left: 956 + 64 };
     }
     return { left: 64 }; // 기본 위치
   }
+  
+  // 뉴스 위젯 위치 계산 (큰 위젯, 위쪽)
+  private static calculateNewsPosition(rightWidgetsOpacity: number): WidgetPosition {
+    if (rightWidgetsOpacity === 0) {
+      // 우측 위젯들이 숨겨진 경우 중앙에 배치
+      return { left: 64 }; // (2378 - 877) / 2 ≈ 750
+    }
+    return { left: 64 }; // 기본 위치
+  }
+  
+  // 건강 위젯 위치 계산 (작은 위젯, 왼쪽 하단)
+  private static calculateHealthPosition(rightWidgetsOpacity: number): WidgetPosition {
+    if (rightWidgetsOpacity === 0) {
+      // 우측 위젯들이 숨겨진 경우 중앙 좌측에 배치
+      return { left: 64 }; // 중앙 왼쪽 위치 (750 - 109)
+    }
+    return { left: 64 }; // 기본 위치
+  }
+  
+
   
   // 위젯 크기 계산
   static calculateDimensions(
@@ -285,6 +331,15 @@ export class WidgetAnimationController {
       return rightWidgetsOpacity === 0 ? 1 : 0;
     }
     
+    if (widgetType === 'news') {
+      return rightWidgetsOpacity === 0 ? 1 : 0;
+    }
+    
+    if (widgetType === 'health') {
+      return rightWidgetsOpacity === 0 ? 1 : 0;
+    }
+    
+
     // 메인 위젯들의 투명도 처리
     if (widgetType === 'clock' || widgetType === 'spotify') {
       return leftWidgetsOpacity;
@@ -315,7 +370,7 @@ export class WidgetAnimationController {
       ...position,
       width: dimensions.width,
       height: dimensions.height,
-      borderRadius: 260,
+      borderRadius: dimensions.width === 877 && dimensions.height === 877 ? 196 : 260,
       opacity,
       transition: `all ${config.duration}s ${config.easing}${customDelay > 0 ? ` ${customDelay}s` : ''}`,
       zIndex: state.activeWidget === WIDGET_CONFIGS[widgetType].id ? 200 : 1,

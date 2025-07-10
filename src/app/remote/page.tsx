@@ -157,21 +157,31 @@ export default function Remote() {
           <div className="mb-4">
             <h3 className="text-sm font-medium text-gray-400 mb-2">모바일</h3>
             <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={() => rightWidgetsOpacity === 0 ? toggleWidget('settings') : null}
-                disabled={rightWidgetsOpacity === 1}
-                className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${
-                  rightWidgetsOpacity === 1 
-                    ? 'bg-gray-600 text-gray-500 cursor-not-allowed border-2 border-transparent'
-                    : activeWidget === 'settings' 
-                      ? 'bg-yellow-600 hover:bg-yellow-700 text-white border-2 border-yellow-400' 
-                      : 'bg-gray-700 hover:bg-gray-600 text-gray-200 border-2 border-transparent'
-                }`}
-              >
-                날씨
-                {activeWidget === 'settings' && ' ●'}
-              </button>
-              <div></div> {/* 빈 공간 */}
+              {[
+                { id: 'gallery', name: '갤러리' },
+                { id: 'settings', name: '날씨' },
+                { id: 'news', name: '뉴스' },
+                { id: 'health', name: '건강' },
+                { id: 'reminder', name: '리마인더' }
+              ].map((widget) => (
+                <button
+                  key={widget.id}
+                  onClick={() => rightWidgetsOpacity === 0 ? toggleWidget(widget.id) : null}
+                  disabled={rightWidgetsOpacity === 1}
+                  className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${
+                    rightWidgetsOpacity === 1 
+                      ? 'bg-gray-600 text-gray-500 cursor-not-allowed border-2 border-transparent'
+                      : activeWidget === widget.id 
+                        ? 'bg-yellow-600 hover:bg-yellow-700 text-white border-2 border-yellow-400' 
+                        : 'bg-gray-700 hover:bg-gray-600 text-gray-200 border-2 border-transparent'
+                  }`}
+                >
+                  {widget.name}
+                  {activeWidget === widget.id && ' ●'}
+                </button>
+              ))}
+              {/* 빈 공간 (홀수 개수일 때) */}
+              <div></div>
             </div>
           </div>
 

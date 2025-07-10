@@ -61,7 +61,7 @@ export default function SpotifyWidget({
             style={{
               fontFamily: 'OneUISansGUI',
               fontWeight: 700,
-              lineHeight: '42px',
+              lineHeight: '54px',
             }}
           >
             Kill Bill

@@ -3,7 +3,7 @@
 import { BackButton } from "@/components/baseUI";
 import { ClockWidget, SpotifyWidget, CoolWidget, HavenWidget } from "@/components/mainWidget";
 import { NotificationWidget } from "@/components/homeWidget";
-import { WeatherWidget, GalleryWidget } from "@/components/mobileWidget";
+import { WeatherWidget, GalleryWidget, NewsWidget, HealthWidget } from "@/components/mobileWidget";
 import { WidgetAnimationController } from "@/utils/widgetAnimations";
 import { useEffect } from "react";
 
@@ -116,6 +116,21 @@ export default function MainContent({
         leftWidgetsOpacity={leftWidgetsOpacity}
         rightWidgetsOpacity={rightWidgetsOpacity}
       />
+      
+      {/* 오른쪽 위젯이 숨겨졌을 때 나타나는 뉴스 위젯 */}
+      <NewsWidget 
+        activeWidget={activeWidget}
+        leftWidgetsOpacity={leftWidgetsOpacity}
+        rightWidgetsOpacity={rightWidgetsOpacity}
+      />
+      
+      {/* 오른쪽 위젯이 숨겨졌을 때 나타나는 건강 위젯 */}
+      <HealthWidget 
+        activeWidget={activeWidget}
+        leftWidgetsOpacity={leftWidgetsOpacity}
+        rightWidgetsOpacity={rightWidgetsOpacity}
+      />
+      
 
       {/* 뒤로가기 버튼 - 위젯이 활성화된 상태에서만 표시 */}
       {activeWidget && (
