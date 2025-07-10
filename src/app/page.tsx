@@ -64,6 +64,17 @@ export default function Home() {
       setTimeout(() => {
         sendStateToRemote();
       }, 1000);
+
+      // 리모콘 창이 닫혔는지 주기적으로 확인
+      const checkRemoteWindow = () => {
+        if (remoteWindowRef.current && remoteWindowRef.current.closed) {
+          setIsRemoteOpen(false);
+          remoteWindowRef.current = null;
+        } else if (remoteWindowRef.current) {
+          setTimeout(checkRemoteWindow, 1000);
+        }
+      };
+      setTimeout(checkRemoteWindow, 1000);
     }
   }, [sendStateToRemote]);
 

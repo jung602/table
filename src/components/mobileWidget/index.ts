@@ -1,1 +1,1 @@
-export { default as SettingsWidget } from './SettingsWidget'; 
+export { default as WeatherWidget } from './WeatherWidget'; 

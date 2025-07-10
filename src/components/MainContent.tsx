@@ -3,7 +3,7 @@
 import { BackButton } from "@/components/baseUI";
 import { ClockWidget, SpotifyWidget, CoolWidget, HavenWidget } from "@/components/mainWidget";
 import { NotificationWidget } from "@/components/homeWidget";
-import { SettingsWidget } from "@/components/mobileWidget";
+import { WeatherWidget } from "@/components/mobileWidget";
 import { WidgetAnimationController } from "@/utils/widgetAnimations";
 import { useEffect } from "react";
 
@@ -103,8 +103,8 @@ export default function MainContent({
         rightWidgetsOpacity={rightWidgetsOpacity}
       />
       
-      {/* 오른쪽 위젯이 숨겨졌을 때 나타나는 설정 위젯 */}
-      <SettingsWidget 
+      {/* 오른쪽 위젯이 숨겨졌을 때 나타나는 날씨 위젯 */}
+      <WeatherWidget 
         activeWidget={activeWidget}
         leftWidgetsOpacity={leftWidgetsOpacity}
         rightWidgetsOpacity={rightWidgetsOpacity}

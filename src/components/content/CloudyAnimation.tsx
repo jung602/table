@@ -8,17 +8,31 @@ interface CloudyAnimationProps {
   autoPlay?: boolean;
   duration?: number;
   delay?: number; // 로드 후 애니메이션 시작 지연 시간
+  trigger?: boolean; // 외부에서 애니메이션 트리거
 }
 
 export default function CloudyAnimation({ 
   className = '', 
   autoPlay = false, 
   duration = 2000,
-  delay = 0
+  delay = 0,
+  trigger = false
 }: CloudyAnimationProps) {
   const [isAnimated, setIsAnimated] = useState(false);
 
   useEffect(() => {
+    // trigger prop이 있으면 이것을 우선으로 사용
+    if (trigger !== undefined) {
+      const startAnimation = setTimeout(() => {
+        setIsAnimated(trigger);
+      }, delay);
+
+      return () => {
+        clearTimeout(startAnimation);
+      };
+    }
+
+    // trigger가 없을 때만 기존 로직 사용
     // 컴포넌트 로드 시 애니메이션 시작
     const startAnimation = setTimeout(() => {
       setIsAnimated(true);
@@ -36,7 +50,7 @@ export default function CloudyAnimation({
       clearTimeout(startAnimation);
       if (interval) clearInterval(interval);
     };
-  }, [autoPlay, duration, delay]);
+  }, [autoPlay, duration, delay, trigger]);
 
   // 애니메이션 variants
   const sunVariants = {
@@ -85,8 +99,10 @@ export default function CloudyAnimation({
           variants={sunVariants}
           animate={animationState}
           transition={{
-            duration: 1.2,
-            ease: "easeInOut"
+            type: "spring",
+            stiffness: 45,
+            damping: 15,
+            mass: 1
           }}
         />
         
@@ -98,9 +114,11 @@ export default function CloudyAnimation({
           variants={smallCloudVariants}
           animate={animationState}
           transition={{
-            duration: 1.2,
-            ease: "easeInOut",
-            delay: 0.1
+            type: "spring",
+            stiffness: 45,
+            damping: 15,
+            mass: 1,
+            delay: 0.05
           }}
         />
         
@@ -112,9 +130,11 @@ export default function CloudyAnimation({
           variants={bigCloudVariants}
           animate={animationState}
           transition={{
-            duration: 1.2,
-            ease: "easeInOut",
-            delay: 0.2
+            type: "spring",
+            stiffness: 45,
+            damping: 15,
+            mass: 1,
+            delay: 0.1
           }}
         />
       </svg>

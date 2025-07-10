@@ -168,7 +168,7 @@ export default function Remote() {
                       : 'bg-gray-700 hover:bg-gray-600 text-gray-200 border-2 border-transparent'
                 }`}
               >
-                설정
+                날씨
                 {activeWidget === 'settings' && ' ●'}
               </button>
               <div></div> {/* 빈 공간 */}

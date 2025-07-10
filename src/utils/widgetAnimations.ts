@@ -112,7 +112,7 @@ export const WIDGET_CONFIGS = {
     id: 'settings',
     side: 'right-replacement',
     position: 'center',
-    baseSize: { width: 418, height: 558 },
+    baseSize: { width: 418, height: 418 },
     expandedSize: { width: 2378, height: 1485 },
     basePosition: { left: 64, top: 64 },
   },
