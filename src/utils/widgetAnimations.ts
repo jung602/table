@@ -104,7 +104,7 @@ export const WIDGET_CONFIGS = {
     id: 'notification',
     side: 'left-replacement',
     position: 'center',
-    baseSize: { width: 418, height: 558 },
+    baseSize: { width: 418, height: 418 },
     expandedSize: { width: 2378, height: 1485 },
     basePosition: { right: 64, top: 64 },
   },
