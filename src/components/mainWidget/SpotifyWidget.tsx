@@ -2,6 +2,8 @@
 
 import { Widget } from "@/components/baseUI";
 import { ImageLong, Player } from "@/components/content";
+import { useWidgetAnimation } from "@/utils/widgetAnimations";
+import type { WidgetAnimationState } from "@/utils/widgetAnimations";
 
 interface SpotifyWidgetProps {
   activeWidget: string | null;
@@ -15,32 +17,16 @@ export default function SpotifyWidget({
   rightWidgetsOpacity 
 }: SpotifyWidgetProps) {
   
-  // 위치 계산: 오른쪽 위젯이 숨겨지면 오른쪽으로 이동
-  const getLeftPosition = () => {
-    if (activeWidget === 'widget2') return 0;
-    if (rightWidgetsOpacity === 0) return window.innerWidth / 2 + 209; // 중앙으로 이동 (418/2 = 209)
-    return 64; // 기본 위치
+  const animationState: WidgetAnimationState = {
+    activeWidget,
+    leftWidgetsOpacity,
+    rightWidgetsOpacity
   };
+  
+  const { style, dimensions } = useWidgetAnimation('spotify', animationState, 'default');
 
   return (
-    <Widget 
-      style={{ 
-        position: 'absolute',
-        left: getLeftPosition(),
-        bottom: activeWidget === 'widget2' ? 0 : 64,
-        width: activeWidget === 'widget2' ? 2378 : 418,
-        height: activeWidget === 'widget2' ? 1485 : 877,
-        borderRadius: 260,
-        opacity: activeWidget && activeWidget !== 'widget2' ? 0 : 1,
-        transition: 'all 0.25s cubic-bezier(0.23, 1, 0.32, 1)',
-        zIndex: activeWidget === 'widget2' ? 200 : 1,
-        transform: 'translate3d(0, 0, 0)',
-        backfaceVisibility: 'hidden',
-        perspective: 1000,
-        overflow: 'hidden',
-        margin: '-2px'
-      }} 
-    >
+    <Widget style={style}>
       <ImageLong
         src="/image/thumb.png"
         overlayImage="/image/thumb.png"
@@ -58,8 +44,8 @@ export default function SpotifyWidget({
         }}
       />
       <Player 
-        width={activeWidget === 'widget2' ? 2378 : 418} 
-        height={activeWidget === 'widget2' ? 1485 : 877} 
+        width={dimensions.width} 
+        height={dimensions.height} 
         className="m-[-3px] z-10"
         isActive={activeWidget === 'widget2'}
       />

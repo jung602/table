@@ -2,6 +2,8 @@
 
 import { Widget } from "@/components/baseUI";
 import { ImageLong } from "@/components/content";
+import { useWidgetAnimation } from "@/utils/widgetAnimations";
+import type { WidgetAnimationState } from "@/utils/widgetAnimations";
 
 interface SettingsWidgetProps {
   activeWidget: string | null;
@@ -15,35 +17,16 @@ export default function SettingsWidget({
   rightWidgetsOpacity 
 }: SettingsWidgetProps) {
   
-  // 오른쪽 위젯이 숨겨졌을 때만 표시
-  const isVisible = rightWidgetsOpacity === 0;
-  
-  // 위치 계산: 오른쪽 위젯이 숨겨지면 중앙으로 이동
-  const getLeftPosition = () => {
-    if (activeWidget === 'settings') return 0;
-    if (rightWidgetsOpacity === 0) return window.innerWidth / 2 - 273; // 중앙으로 이동 (418 + 209)
-    return 64; // 기본 위치
+  const animationState: WidgetAnimationState = {
+    activeWidget,
+    leftWidgetsOpacity,
+    rightWidgetsOpacity
   };
+  
+  const { style } = useWidgetAnimation('settings', animationState, 'default');
 
   return (
-    <Widget 
-      style={{ 
-        position: 'absolute',
-        left: getLeftPosition(),
-        top: activeWidget === 'settings' ? 0 : 64,
-        width: activeWidget === 'settings' ? 2378 : 418,
-        height: activeWidget === 'settings' ? 1485 : 558,
-        borderRadius: 260,
-        opacity: isVisible ? (activeWidget && activeWidget !== 'settings' ? 0 : 1) : 0,
-        transition: 'all 0.25s cubic-bezier(0.23, 1, 0.32, 1)',
-        zIndex: activeWidget === 'settings' ? 200 : 1,
-        transform: 'translate3d(0, 0, 0)',
-        backfaceVisibility: 'hidden',
-        perspective: 1000,
-        overflow: 'hidden',
-        margin: '-2px'
-      }} 
-    >
+    <Widget style={style}>
       <div className="relative flex flex-col items-center justify-center h-full p-8">
         {/* 배경 그라디언트 */}
         <div 

@@ -2,6 +2,8 @@
 
 import { Widget } from "@/components/baseUI";
 import { ImageLong } from "@/components/content";
+import { useWidgetAnimation } from "@/utils/widgetAnimations";
+import type { WidgetAnimationState } from "@/utils/widgetAnimations";
 
 interface CoolWidgetProps {
   activeWidget: string | null;
@@ -14,36 +16,17 @@ export default function CoolWidget({
   leftWidgetsOpacity, 
   rightWidgetsOpacity 
 }: CoolWidgetProps) {
-  const isActive = activeWidget === 'widget3';
-  const currentWidth = isActive ? 2380 : 418;
-  const currentHeight = isActive ? 1485 : 877;
-
-  // 위치 계산: 왼쪽 위젯이 숨겨지면 왼쪽으로 이동
-  const getRightPosition = () => {
-    if (isActive) return 0;
-    if (leftWidgetsOpacity === 0) return window.innerWidth / 2 + 209; // 중앙으로 이동 (418/2 = 209)
-    return 64; // 기본 위치
+  
+  const animationState: WidgetAnimationState = {
+    activeWidget,
+    leftWidgetsOpacity,
+    rightWidgetsOpacity
   };
+  
+  const { style } = useWidgetAnimation('cool', animationState, 'default');
 
   return (
-    <Widget 
-      style={{ 
-        position: 'absolute',
-        right: getRightPosition(),
-        top: isActive ? 0 : 64,
-        width: currentWidth,
-        height: currentHeight,
-        borderRadius: 260,
-        opacity: activeWidget && activeWidget !== 'widget3' ? 0 : 1,
-        transition: 'all 0.25s cubic-bezier(0.23, 1, 0.32, 1)',
-        zIndex: isActive ? 200 : 1,
-        transform: 'translate3d(0, 0, 0)',
-        backfaceVisibility: 'hidden',
-        perspective: 1000,
-        overflow: 'hidden',
-        margin: '-4px'
-      }} 
-    >
+    <Widget style={style}>
       {/*<ImageLong
         saturation={2}
         className="opacity-0 absolute inset-0 object-cover"

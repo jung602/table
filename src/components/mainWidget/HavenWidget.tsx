@@ -2,6 +2,8 @@
 
 import { Widget } from "@/components/baseUI";
 import { ImageInvert } from "@/components/content";
+import { useWidgetAnimation } from "@/utils/widgetAnimations";
+import type { WidgetAnimationState } from "@/utils/widgetAnimations";
 
 interface HavenWidgetProps {
   activeWidget: string | null;
@@ -15,32 +17,16 @@ export default function HavenWidget({
   rightWidgetsOpacity 
 }: HavenWidgetProps) {
   
-  // 위치 계산: 왼쪽 위젯이 숨겨지면 왼쪽으로 이동
-  const getRightPosition = () => {
-    if (activeWidget === 'widget4') return 0;
-    if (leftWidgetsOpacity === 0) return window.innerWidth / 2 + 209; // 중앙으로 이동 (418/2 = 209)
-    return 64; // 기본 위치
+  const animationState: WidgetAnimationState = {
+    activeWidget,
+    leftWidgetsOpacity,
+    rightWidgetsOpacity
   };
+  
+  const { style } = useWidgetAnimation('haven', animationState, 'default');
 
   return (
-    <Widget 
-      style={{ 
-        position: 'absolute',
-        right: getRightPosition(),
-        bottom: activeWidget === 'widget4' ? 0 : 64,
-        width: activeWidget === 'widget4' ? 2378 : 418,
-        height: activeWidget === 'widget4' ? 1485 : 418,
-        borderRadius: 260,
-        opacity: activeWidget && activeWidget !== 'widget4' ? 0 : 1,
-        transition: 'all 0.25s cubic-bezier(0.23, 1, 0.32, 1)',
-        zIndex: activeWidget === 'widget4' ? 200 : 1,
-        transform: 'translate3d(0, 0, 0)',
-        backfaceVisibility: 'hidden',
-        perspective: 1000,
-        overflow: 'hidden',
-        margin: '-2px'
-      }} 
-    >
+    <Widget style={style}>
       <div className="relative flex items-center justify-center h-full">
         <ImageInvert 
           size={418}

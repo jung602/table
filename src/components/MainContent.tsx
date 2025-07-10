@@ -4,6 +4,8 @@ import { BackButton } from "@/components/baseUI";
 import { ClockWidget, SpotifyWidget, CoolWidget, HavenWidget } from "@/components/mainWidget";
 import { NotificationWidget } from "@/components/homeWidget";
 import { SettingsWidget } from "@/components/mobileWidget";
+import { WidgetAnimationController } from "@/utils/widgetAnimations";
+import { useEffect } from "react";
 
 interface MainContentProps {
   activeWidget: string | null;
@@ -20,6 +22,18 @@ export default function MainContent({
   rightWidgetsOpacity,
   resetAllWidgets
 }: MainContentProps) {
+
+  // 화면 너비 업데이트 (중앙 애니메이션 시스템에서 사용)
+  useEffect(() => {
+    const updateScreenWidth = () => {
+      WidgetAnimationController.updateScreenWidth(window.innerWidth);
+    };
+    
+    updateScreenWidth();
+    window.addEventListener('resize', updateScreenWidth);
+    
+    return () => window.removeEventListener('resize', updateScreenWidth);
+  }, []);
 
   // 가운데 텍스트 opacity 계산: 위젯이 활성화되거나 한쪽 위젯이 숨겨지면 텍스트도 숨김
   const centerTextOpacity = (activeWidget || leftWidgetsOpacity === 0 || rightWidgetsOpacity === 0) ? 0 : 1;
