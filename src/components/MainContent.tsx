@@ -3,7 +3,7 @@
 import { BackButton } from "@/components/baseUI";
 import { ClockWidget, SpotifyWidget, CoolWidget, HavenWidget } from "@/components/mainWidget";
 import { NotificationWidget } from "@/components/homeWidget";
-import { WeatherWidget } from "@/components/mobileWidget";
+import { WeatherWidget, GalleryWidget } from "@/components/mobileWidget";
 import { WidgetAnimationController } from "@/utils/widgetAnimations";
 import { useEffect } from "react";
 
@@ -69,7 +69,7 @@ export default function MainContent({
       </div>
 
       {/* 위젯들 */}
-      <div style={{ opacity: leftWidgetsOpacity, transition: 'opacity 0.3s ease-out' }}>
+      <div>
         <ClockWidget 
           activeWidget={activeWidget} 
           leftWidgetsOpacity={leftWidgetsOpacity}
@@ -82,7 +82,7 @@ export default function MainContent({
         />
       </div>
       
-      <div style={{ opacity: rightWidgetsOpacity, transition: 'opacity 0.3s ease-out' }}>
+      <div>
         <CoolWidget 
           activeWidget={activeWidget}
           leftWidgetsOpacity={leftWidgetsOpacity}
@@ -98,6 +98,13 @@ export default function MainContent({
       {/* 새로운 위젯들 - 조건부 표시 */}
       {/* 왼쪽 위젯이 숨겨졌을 때 나타나는 알림 위젯 */}
       <NotificationWidget 
+        activeWidget={activeWidget}
+        leftWidgetsOpacity={leftWidgetsOpacity}
+        rightWidgetsOpacity={rightWidgetsOpacity}
+      />
+      
+      {/* 오른쪽 위젯이 숨겨졌을 때 나타나는 갤러리 위젯 */}
+      <GalleryWidget 
         activeWidget={activeWidget}
         leftWidgetsOpacity={leftWidgetsOpacity}
         rightWidgetsOpacity={rightWidgetsOpacity}

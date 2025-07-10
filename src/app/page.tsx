@@ -126,10 +126,14 @@ export default function Home() {
     };
   }, [sendStateToRemote, toggleLeftWidgets, toggleRightWidgets, resetAllWidgets, toggleWidget]);
 
-  // 상태 변경 시 리모콘에 업데이트 전송
+  // 상태 변경 시 리모콘에 업데이트 전송 (애니메이션 완료 후)
   useEffect(() => {
-    sendStateToRemote();
-  }, [sendStateToRemote]);
+    const timer = setTimeout(() => {
+      sendStateToRemote();
+    }, 350); // 애니메이션 완료 후 전송 (0.3s + 여유시간)
+    
+    return () => clearTimeout(timer);
+  }, [activeWidget, leftWidgetsOpacity, rightWidgetsOpacity]);
 
   // activeWidget 변경 시 투명도 초기화
   useEffect(() => {

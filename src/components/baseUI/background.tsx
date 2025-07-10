@@ -10,7 +10,7 @@ interface BackgroundProps {
 
 const Background: React.FC<BackgroundProps> = ({
   width = 2378,
-  height = 1485,
+  height = 1465,
   children,
   className = '',
   style = {},

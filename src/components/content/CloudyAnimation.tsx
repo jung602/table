@@ -22,14 +22,18 @@ export default function CloudyAnimation({
 
   useEffect(() => {
     // trigger prop이 있으면 이것을 우선으로 사용
-    if (trigger !== undefined) {
+    if (trigger) {
       const startAnimation = setTimeout(() => {
-        setIsAnimated(trigger);
+        setIsAnimated(true);
       }, delay);
 
       return () => {
         clearTimeout(startAnimation);
       };
+    } else if (trigger === false) {
+      // trigger가 명시적으로 false일 때는 즉시 리셋
+      setIsAnimated(false);
+      return;
     }
 
     // trigger가 없을 때만 기존 로직 사용
@@ -99,10 +103,10 @@ export default function CloudyAnimation({
           variants={sunVariants}
           animate={animationState}
           transition={{
-            type: "spring",
-            stiffness: 45,
-            damping: 15,
-            mass: 1
+            type: "tween",
+            duration: 0.8,
+            ease: [0.23, 1, 0.32, 1],
+            delay: 0.1
           }}
         />
         
@@ -114,11 +118,10 @@ export default function CloudyAnimation({
           variants={smallCloudVariants}
           animate={animationState}
           transition={{
-            type: "spring",
-            stiffness: 45,
-            damping: 15,
-            mass: 1,
-            delay: 0.05
+            type: "tween",
+            duration: 0.8,
+            ease: [0.23, 1, 0.32, 1],
+            delay: 0.2
           }}
         />
         
@@ -130,11 +133,10 @@ export default function CloudyAnimation({
           variants={bigCloudVariants}
           animate={animationState}
           transition={{
-            type: "spring",
-            stiffness: 45,
-            damping: 15,
-            mass: 1,
-            delay: 0.1
+            type: "tween",
+            duration: 0.8,
+            ease: [0.23, 1, 0.32, 1],
+            delay: 0.3
           }}
         />
       </svg>

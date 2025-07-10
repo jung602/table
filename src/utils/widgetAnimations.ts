@@ -28,7 +28,7 @@ export interface WidgetDimensions {
 export const ANIMATION_PRESETS = {
   // 기본 애니메이션 설정
   default: {
-    duration: 0.25,
+    duration: 0.3,
     easing: 'cubic-bezier(0.23, 1, 0.32, 1)',
     delay: 0,
   },
@@ -64,7 +64,7 @@ export const ANIMATION_PRESETS = {
 } as const;
 
 // 위젯 타입 정의
-export type WidgetType = 'clock' | 'spotify' | 'cool' | 'haven' | 'notification' | 'settings';
+export type WidgetType = 'clock' | 'spotify' | 'cool' | 'haven' | 'notification' | 'settings' | 'gallery';
 
 // 위젯 기본 설정
 export const WIDGET_CONFIGS = {
@@ -113,6 +113,14 @@ export const WIDGET_CONFIGS = {
     side: 'right-replacement',
     position: 'center',
     baseSize: { width: 418, height: 418 },
+    expandedSize: { width: 2378, height: 1485 },
+    basePosition: { left: 64, top: 64 },
+  },
+  gallery: {
+    id: 'gallery',
+    side: 'right-replacement',
+    position: 'center',
+    baseSize: { width: 418, height: 877 },
     expandedSize: { width: 2378, height: 1485 },
     basePosition: { left: 64, top: 64 },
   },
@@ -175,6 +183,12 @@ export class WidgetAnimationController {
       case 'settings':
         return {
           ...this.calculateSettingsPosition(rightWidgetsOpacity),
+          top: 64 + 877 + 20  // GalleryWidget 높이 + 간격
+        };
+        
+      case 'gallery':
+        return {
+          ...this.calculateGalleryPosition(rightWidgetsOpacity),
           top: 64
         };
         
@@ -186,7 +200,8 @@ export class WidgetAnimationController {
   // 왼쪽 위젯 위치 계산
   private static calculateLeftWidgetPosition(rightWidgetsOpacity: number): WidgetPosition {
     if (rightWidgetsOpacity === 0) {
-      return { left: this.screenWidth / 2 + 209 }; // 중앙으로 이동
+      // 기존: right: 522 → left: 1438 (2378 - 522 - 418)
+      return { left: 1438 };
     }
     return { left: 64 }; // 기본 위치
   }
@@ -194,23 +209,37 @@ export class WidgetAnimationController {
   // 오른쪽 위젯 위치 계산
   private static calculateRightWidgetPosition(leftWidgetsOpacity: number): WidgetPosition {
     if (leftWidgetsOpacity === 0) {
-      return { right: this.screenWidth / 2 + 209 }; // 중앙으로 이동
+      // 기존: left: 522 → 그대로 유지
+      return { left: 522 };
     }
-    return { right: 64 }; // 기본 위치
+    // 기존: right: 64 → left: 1896 (2378 - 64 - 418)
+    return { left: 1896 };
   }
   
   // 알림 위젯 위치 계산
   private static calculateNotificationPosition(leftWidgetsOpacity: number): WidgetPosition {
     if (leftWidgetsOpacity === 0) {
-      return { right: this.screenWidth / 2 - 273 }; // 중앙으로 이동
+      // 기존: left: 522 + 40 + 418 = left: 980 → 그대로 유지
+      return { left: 982 };
     }
-    return { right: 64 }; // 기본 위치
+    // 기존: right: 64 → left: 1896 (2378 - 64 - 418)
+    return { left: 1896 };
   }
   
-  // 설정 위젯 위치 계산
+  // 날씨 위젯 위치 계산
   private static calculateSettingsPosition(rightWidgetsOpacity: number): WidgetPosition {
     if (rightWidgetsOpacity === 0) {
-      return { left: this.screenWidth / 2 - 273 }; // 중앙으로 이동
+      // 기존: right: 522 + 40 + 418 = right: 980 → left: 980 (2378 - 980 - 418)
+      return { left: 982 };
+    }
+    return { left: 64 }; // 기본 위치
+  }
+  
+  // 갤러리 위젯 위치 계산 (WeatherWidget 위에 배치)
+  private static calculateGalleryPosition(rightWidgetsOpacity: number): WidgetPosition {
+    if (rightWidgetsOpacity === 0) {
+      // 기존: right: 522 + 40 + 418 = right: 980 → left: 980 (2378 - 980 - 418)
+      return { left: 982 };
     }
     return { left: 64 }; // 기본 위치
   }
@@ -250,6 +279,19 @@ export class WidgetAnimationController {
     
     if (widgetType === 'settings') {
       return rightWidgetsOpacity === 0 ? 1 : 0;
+    }
+    
+    if (widgetType === 'gallery') {
+      return rightWidgetsOpacity === 0 ? 1 : 0;
+    }
+    
+    // 메인 위젯들의 투명도 처리
+    if (widgetType === 'clock' || widgetType === 'spotify') {
+      return leftWidgetsOpacity;
+    }
+    
+    if (widgetType === 'cool' || widgetType === 'haven') {
+      return rightWidgetsOpacity;
     }
     
     return 1;
