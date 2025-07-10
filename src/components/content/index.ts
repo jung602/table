@@ -1,4 +1,5 @@
 export { default as Clock } from './Clock';
+export { default as CloudyAnimation } from './CloudyAnimation';
 export { default as Gradient } from './Gradient';
 export { default as Image } from './Image';
 export { default as ImageInvert } from './ImageInvert';

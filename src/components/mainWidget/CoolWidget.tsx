@@ -1,38 +1,50 @@
 'use client';
 
-import { Widget } from "@/components/ui";
+import { Widget } from "@/components/baseUI";
 import { ImageLong } from "@/components/content";
 
 interface CoolWidgetProps {
   activeWidget: string | null;
+  leftWidgetsOpacity: number;
+  rightWidgetsOpacity: number;
 }
 
-export default function CoolWidget({ activeWidget }: CoolWidgetProps) {
+export default function CoolWidget({ 
+  activeWidget, 
+  leftWidgetsOpacity, 
+  rightWidgetsOpacity 
+}: CoolWidgetProps) {
   const isActive = activeWidget === 'widget3';
-  const currentWidth = isActive ? 2378 : 418;
+  const currentWidth = isActive ? 2380 : 418;
   const currentHeight = isActive ? 1485 : 877;
+
+  // 위치 계산: 왼쪽 위젯이 숨겨지면 왼쪽으로 이동
+  const getRightPosition = () => {
+    if (isActive) return 0;
+    if (leftWidgetsOpacity === 0) return window.innerWidth / 2 + 209; // 중앙으로 이동 (418/2 = 209)
+    return 64; // 기본 위치
+  };
 
   return (
     <Widget 
       style={{ 
         position: 'absolute',
-        right: isActive ? 0 : 64,
+        right: getRightPosition(),
         top: isActive ? 0 : 64,
         width: currentWidth,
         height: currentHeight,
         borderRadius: 260,
         opacity: activeWidget && activeWidget !== 'widget3' ? 0 : 1,
-        transition: 'all 0.25s cubic-bezier(0.17, 0.67, 0.83, 0.67)',
+        transition: 'all 0.25s cubic-bezier(0.23, 1, 0.32, 1)',
         zIndex: isActive ? 200 : 1,
         transform: 'translate3d(0, 0, 0)',
         backfaceVisibility: 'hidden',
         perspective: 1000,
         overflow: 'hidden',
+        margin: '-4px'
       }} 
     >
-      <ImageLong 
-        width={currentWidth}
-        height={currentHeight}
+      {/*<ImageLong
         saturation={2}
         className="opacity-0 absolute inset-0 object-cover"
       />
@@ -83,7 +95,6 @@ export default function CoolWidget({ activeWidget }: CoolWidgetProps) {
         >
         </div>
 
-
         {/* 그라디언트 영역 위 텍스트 */}
         <div
           className="absolute left-1/2 transform -translate-x-1/2 px-8"
@@ -92,7 +103,6 @@ export default function CoolWidget({ activeWidget }: CoolWidgetProps) {
             width: '90%',
             textAlign: 'center',
             zIndex: 10,
-            
           }}
         >
           <p 
@@ -105,7 +115,6 @@ export default function CoolWidget({ activeWidget }: CoolWidgetProps) {
             Expires tommorow, better drink it soon!
           </p>
         </div>
-
 
         {/* AI cooling 컴포넌트 */}
         <div
@@ -127,7 +136,7 @@ export default function CoolWidget({ activeWidget }: CoolWidgetProps) {
             }
             
             .rotating-gradient {
-              background: conic-gradient(from var(--gradient-angle), rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.5) 15%, rgba(255, 255, 255, .5) 30%, rgba(255, 255, 255, 0.5) 100%), rgba(255, 255, 255, .2);
+              background: conic-gradient(from var(--gradient-angle), rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 15%, rgba(255, 255, 255, .5) 30%, rgba(255, 255, 255, 0.5) 100%), rgba(255, 255, 255, .2);
               animation: rotate-gradient 2s linear infinite;
             }
           `}</style>
@@ -135,7 +144,7 @@ export default function CoolWidget({ activeWidget }: CoolWidgetProps) {
             className="relative overflow-hidden rotating-gradient "
             style={{
               borderRadius: 50,
-              padding: '6px',
+              padding: '4px',
             }}
           >
             <div
@@ -162,8 +171,6 @@ export default function CoolWidget({ activeWidget }: CoolWidgetProps) {
             </div>
           </div>
         </div>
-
-
 
         {/* 내부 카드 */}
         <div
@@ -212,59 +219,7 @@ export default function CoolWidget({ activeWidget }: CoolWidgetProps) {
 
           </div>
 
-        {/* 페이지네이션 인디케이터 
-        <div
-          className="absolute left-1/2 transform -translate-x-1/2"
-          style={{
-            bottom: '100px',
-            display: 'flex',
-            gap: '12px',
-            alignItems: 'center',
-          }}
-        >
-          {[0, 1, 2, 3, 4].map((index) => (
-            <div
-              key={index}
-              style={{
-                width: '12px',
-                height: '12px',
-                borderRadius: '50%',
-                backgroundColor: index === 0 ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.2)',
-                transition: 'all 0.3s ease',
-              }}
-            />
-          ))}
-        </div>*/}
-
-        {/* 주문 버튼 
-        <div
-          className="absolute left-1/2 transform -translate-x-1/2"
-          style={{
-            bottom: '16px',
-            width: '90%',
-          }}
-        >
-          <button
-            className="w-full text-black font-semibold"
-            style={{
-              backgroundColor: 'rgba(255, 255, 255, 1)',
-              borderRadius: '32px',
-              padding: '16px 0',
-              fontSize: '20px',
-              lineHeight: '24px',
-              border: 'none',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            Order
-          </button>
-        </div>*/}
-
-
       </div>
-
-
 
     </Widget>
   );

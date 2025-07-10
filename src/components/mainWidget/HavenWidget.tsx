@@ -1,18 +1,32 @@
 'use client';
 
-import { Widget } from "@/components/ui";
+import { Widget } from "@/components/baseUI";
 import { ImageInvert } from "@/components/content";
 
 interface HavenWidgetProps {
   activeWidget: string | null;
+  leftWidgetsOpacity: number;
+  rightWidgetsOpacity: number;
 }
 
-export default function HavenWidget({ activeWidget }: HavenWidgetProps) {
+export default function HavenWidget({ 
+  activeWidget, 
+  leftWidgetsOpacity, 
+  rightWidgetsOpacity 
+}: HavenWidgetProps) {
+  
+  // 위치 계산: 왼쪽 위젯이 숨겨지면 왼쪽으로 이동
+  const getRightPosition = () => {
+    if (activeWidget === 'widget4') return 0;
+    if (leftWidgetsOpacity === 0) return window.innerWidth / 2 + 209; // 중앙으로 이동 (418/2 = 209)
+    return 64; // 기본 위치
+  };
+
   return (
     <Widget 
       style={{ 
         position: 'absolute',
-        right: activeWidget === 'widget4' ? 0 : 64,
+        right: getRightPosition(),
         bottom: activeWidget === 'widget4' ? 0 : 64,
         width: activeWidget === 'widget4' ? 2378 : 418,
         height: activeWidget === 'widget4' ? 1485 : 418,
@@ -24,6 +38,7 @@ export default function HavenWidget({ activeWidget }: HavenWidgetProps) {
         backfaceVisibility: 'hidden',
         perspective: 1000,
         overflow: 'hidden',
+        margin: '-2px'
       }} 
     >
       <div className="relative flex items-center justify-center h-full">

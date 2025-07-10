@@ -1,18 +1,32 @@
 'use client';
 
-import { Widget } from "@/components/ui";
+import { Widget } from "@/components/baseUI";
 import { ImageLong, Player } from "@/components/content";
 
 interface SpotifyWidgetProps {
   activeWidget: string | null;
+  leftWidgetsOpacity: number;
+  rightWidgetsOpacity: number;
 }
 
-export default function SpotifyWidget({ activeWidget }: SpotifyWidgetProps) {
+export default function SpotifyWidget({ 
+  activeWidget, 
+  leftWidgetsOpacity, 
+  rightWidgetsOpacity 
+}: SpotifyWidgetProps) {
+  
+  // 위치 계산: 오른쪽 위젯이 숨겨지면 오른쪽으로 이동
+  const getLeftPosition = () => {
+    if (activeWidget === 'widget2') return 0;
+    if (rightWidgetsOpacity === 0) return window.innerWidth / 2 + 209; // 중앙으로 이동 (418/2 = 209)
+    return 64; // 기본 위치
+  };
+
   return (
     <Widget 
       style={{ 
         position: 'absolute',
-        left: activeWidget === 'widget2' ? 0 : 64,
+        left: getLeftPosition(),
         bottom: activeWidget === 'widget2' ? 0 : 64,
         width: activeWidget === 'widget2' ? 2378 : 418,
         height: activeWidget === 'widget2' ? 1485 : 877,
@@ -24,6 +38,7 @@ export default function SpotifyWidget({ activeWidget }: SpotifyWidgetProps) {
         backfaceVisibility: 'hidden',
         perspective: 1000,
         overflow: 'hidden',
+        margin: '-2px'
       }} 
     >
       <ImageLong
@@ -45,7 +60,8 @@ export default function SpotifyWidget({ activeWidget }: SpotifyWidgetProps) {
       <Player 
         width={activeWidget === 'widget2' ? 2378 : 418} 
         height={activeWidget === 'widget2' ? 1485 : 877} 
-        className="m-[-2px] z-10"
+        className="m-[-3px] z-10"
+        isActive={activeWidget === 'widget2'}
       />
       <div className="z-20 flex flex-col items-center justify-between h-full">
         <div className="z-20 mt-[42px]">

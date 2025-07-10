@@ -6,10 +6,10 @@ interface PlayerProps {
   width: number;
   height: number;
   className?: string;
+  isActive?: boolean; // 위젯 활성화 상태
 }
 
-export default function Player({ width, height, className = '' }: PlayerProps) {
-  const [isHovered, setIsHovered] = useState(false);
+export default function Player({ width, height, className = '', isActive = false }: PlayerProps) {
   const [currentProgress, setCurrentProgress] = useState(0);
   const animationStartTime = useRef<number>(Date.now());
   const progressRef = useRef<SVGPathElement | SVGLineElement>(null);
@@ -29,7 +29,7 @@ export default function Player({ width, height, className = '' }: PlayerProps) {
   const cornerPerimeter = 2 * Math.PI * adjustedRadius;
   const totalPerimeter = straightSides + cornerPerimeter;
 
-  // 직선 플레이어의 길이 (호버 시 사용)
+  // 직선 플레이어의 길이 (활성화 시 사용)
   const lineLength = rectWidth - 40; // 좌우 마진 20씩
   const lineY = height / 2; // 중앙 수직 위치
   const lineStartX = padding + 20; // 시작점
@@ -39,7 +39,14 @@ export default function Player({ width, height, className = '' }: PlayerProps) {
   useEffect(() => {
     const updateProgress = () => {
       const elapsed = Date.now() - animationStartTime.current;
-      const progress = (elapsed % animationDuration) / animationDuration;
+      let progress = (elapsed % animationDuration) / animationDuration;
+      
+      // 진행도가 1에 가까우면 명확히 리셋
+      if (progress >= 0.99) {
+        progress = 0;
+        animationStartTime.current = Date.now();
+      }
+      
       setCurrentProgress(progress);
     };
 
@@ -76,8 +83,6 @@ export default function Player({ width, height, className = '' }: PlayerProps) {
           width: width,
           height: height,
         }}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
       >
         <svg
           width={width}
@@ -88,8 +93,8 @@ export default function Player({ width, height, className = '' }: PlayerProps) {
             left: 0,
           }}
         >
-          {!isHovered ? (
-            // 둥근 사각형 모드
+          {!isActive ? (
+            // 둥근 사각형 모드 (비활성화 상태)
             <>
               {/* 배경 사각형 */}
               <path
@@ -109,11 +114,11 @@ export default function Player({ width, height, className = '' }: PlayerProps) {
                 strokeLinecap="round"
                 strokeDasharray={totalPerimeter}
                 strokeDashoffset={getRectOffset()}
-                style={{ transition: isHovered ? 'none' : 'stroke-dashoffset 0.3s ease-in-out' }}
+                style={{ transition: isActive ? 'none' : 'stroke-dashoffset 0.3s ease-in-out' }}
               />
             </>
           ) : (
-            // 직선 플레이어 모드
+            // 직선 플레이어 모드 (활성화 상태)
             <>
               {/* 배경 라인 */}
               <line
@@ -138,7 +143,7 @@ export default function Player({ width, height, className = '' }: PlayerProps) {
                 strokeLinecap="round"
                 strokeDasharray={lineLength}
                 strokeDashoffset={getLineOffset()}
-                style={{ transition: isHovered ? 'none' : 'stroke-dashoffset 0.3s ease-in-out' }}
+                style={{ transition: isActive ? 'none' : 'stroke-dashoffset 0.3s ease-in-out' }}
               />
             </>
           )}

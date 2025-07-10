@@ -37,7 +37,7 @@ const Widget: React.FC<WidgetProps> = ({
       }}
     >
       <div
-        className="absolute inset-0 m-[2px]"
+        className="absolute inset-0 m-[3px]"
         style={{
           background: `
             radial-gradient(circle, rgba(255, 255, 255, 0.05) 24%, rgba(255, 255, 255, 0.2) 100%),
