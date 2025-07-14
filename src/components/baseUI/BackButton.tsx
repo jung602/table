@@ -10,7 +10,7 @@ const BackButton: React.FC<BackButtonProps> = ({
   className = '',
   style = {},
 }) => {
-  const size = 120; // 원형 버튼 크기
+  const size = 100; // 원형 버튼 크기
   const borderRadius = '9999px'; // 완전한 원형
   
   return (
