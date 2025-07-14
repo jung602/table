@@ -29,7 +29,7 @@ export default function HavenWidget({
     <Widget style={style}>
       <div className="relative flex items-center justify-center h-full">
         <ImageInvert 
-          size={418}
+          size={412}
           className="transition-all duration-300 rounded-full"
           blendMode="normal"
           saturation={2}

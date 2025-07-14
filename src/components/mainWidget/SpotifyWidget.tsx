@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Widget } from "@/components/baseUI";
 import { ImageLong, Player } from "@/components/content";
 import { useWidgetAnimation } from "@/utils/widgetAnimations";
@@ -24,6 +25,78 @@ export default function SpotifyWidget({
   };
   
   const { style, dimensions } = useWidgetAnimation('spotify', animationState, 'default');
+
+  // 앨범커버 크기 계산
+  const albumSize = Math.min(dimensions.width, dimensions.height) * .55;
+
+  // 가사 데이터 (시간 : 가사) - 3초 간격
+  const lyrics = [
+    { time: 0, text: "I'm still a fan" },
+    { time: 3, text: "even though I was salty" },
+    { time: 6, text: "Hate to see you happy'" },
+    { time: 9, text: "if I'm not the one drivin" },
+    { time: 12, text: "I'm so mature, I'm so mature" },
+    { time: 15, text: "I'm so mature, I got me a therapist" },
+    { time: 18, text: "to tell me there's other men" },
+    { time: 21, text: "I don't want none, I just want you" },
+    { time: 24, text: "If I can't have you," },
+    { time: 27, text: "no one should, I might" },
+    { time: 30, text: "I might kill my ex, not the best idea" },
+    { time: 33, text: "His new girlfriend's next," },
+    { time: 36, text: "how'd I get here?" },
+    { time: 39, text: "I might kill my ex, I still love him, though" },
+    { time: 42, text: "Rather be in jail than alone" },
+    { time: 45, text: "I get the sense that it's a lost cause" },
+    { time: 48, text: "that you might really love her" },
+    { time: 51, text: "The text gon' be evidence," },
+    { time: 54, text: "I try to ration with you, no murders," },
+    { time: 57, text: "no crime of passion" },
+    { time: 60, text: "But, damn, you was out of reach" },
+  ];
+
+  // 현재 재생 시간 계산 (총 234초 기준)
+  const [currentTime, setCurrentTime] = useState(0);
+  const [isFirstExpansion, setIsFirstExpansion] = useState(true);
+  
+  useEffect(() => {
+    if (activeWidget === 'widget2') { // 확장 상태일 때만 실행
+      const startTime = Date.now();
+      const fifthLyricTime = 12; // 다섯번째 가사 시간 (12초)
+      
+      // 확장 즉시 다섯번째 가사로 설정
+      setCurrentTime(fifthLyricTime);
+      setIsFirstExpansion(true);
+      
+      // 짧은 지연 후 애니메이션 활성화
+      const enableAnimation = setTimeout(() => {
+        setIsFirstExpansion(false);
+      }, 50);
+      
+      const interval = setInterval(() => {
+        const elapsed = ((Date.now() - startTime) / 1000 + fifthLyricTime) % 90; // 다섯번째 가사부터 시작
+        setCurrentTime(elapsed);
+      }, 100);
+      
+      return () => {
+        clearInterval(interval);
+        clearTimeout(enableAnimation);
+      };
+    } else {
+      // 축소 상태에서는 시간 리셋
+      setCurrentTime(0);
+      setIsFirstExpansion(true);
+    }
+  }, [activeWidget]);
+
+  // 현재 가사 인덱스 찾기
+  const getCurrentLyricIndex = () => {
+    for (let i = lyrics.length - 1; i >= 0; i--) {
+      if (currentTime >= lyrics[i].time) {
+        return i;
+      }
+    }
+    return 0;
+  };
 
   return (
     <Widget style={style}>
@@ -56,13 +129,13 @@ export default function SpotifyWidget({
           >
             <div
               style={{
-                width: Math.min(dimensions.width, dimensions.height) * .55, // 정사각형, 80% 크기
-                height: Math.min(dimensions.width, dimensions.height) * .55,
+                width: albumSize,
+                height: albumSize,
                 backgroundImage: 'url(/image/thumb.png)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
-                borderRadius: 40,
+                borderRadius: 80,
                 filter: 'saturate(1)',
                 position: 'absolute',
                 left: 100, 
@@ -71,18 +144,73 @@ export default function SpotifyWidget({
               }}
             />
           </div>
+          
+          {/* 가사 영역 */}
+          <div
+            style={{
+              position: 'absolute',
+              left: 100 + albumSize + 80, // 섬네일 오른쪽 + 80px
+              top: '50%',
+              transform: 'translateY(-50%)',
+              width: dimensions.width - albumSize - 280, // 화면 오른쪽 끝에서 100px 남기기
+              height: 560, // 높이를 560px로 조정
+              zIndex: 2,
+              overflow: 'hidden',
+              maskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)',
+              WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '20px',
+                transform: `translateY(${-(getCurrentLyricIndex() * 116)}px)`, // 각 가사 높이 + gap = 96px + 32px = 128px
+                transition: isFirstExpansion ? 'none' : 'transform 0.5s ease-out',
+                paddingTop: '252px', // 560px 높이의 중앙에서 40px 위로 조정 (280px - 40px)
+                paddingLeft: '20px', // 왼쪽 패딩 추가
+                paddingRight: '20px', // 오른쪽도 균형 맞추기
+              }}
+            >
+              {lyrics.map((lyric, index) => {
+                const currentIndex = getCurrentLyricIndex();
+                const isActive = index === currentIndex;
+                const isPast = index < currentIndex;
+                
+                return (
+                  <div
+                    key={index}
+                    style={{
+                      fontSize: '64px',
+                      fontFamily: 'OneUISansGUI',
+                      fontWeight: 600,
+                      lineHeight: '96px',
+                      color: isActive ? '#FFFFFF' : isPast ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.5)',
+                      opacity: isActive ? 1 : isPast ? 0.3 : 0.5,
+                      transform: isActive ? 'scale(1.02)' : 'scale(1)',
+                      transition: isFirstExpansion ? 'none' : 'all 0.5s ease-out',
+                      textShadow: 'none', // 그림자 효과 제거
+                    }}
+                  >
+                    {lyric.text}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </>
       ) : (
         // 축소 상태: 기존 ImageLong
         <ImageLong
           src="/image/thumb.png"
           overlayImage="/image/thumb.png"
-          width={dimensions.width}
+          width={dimensions.width - 6}
           height={dimensions.height}
           className="absolute inset-0"
           blendMode="normal"
           saturation={1}
           style={{
+            
             position: 'absolute',
             top: 0,
             left: 0,
@@ -94,7 +222,7 @@ export default function SpotifyWidget({
       <Player 
         width={dimensions.width} 
         height={dimensions.height} 
-        className="m-[-3px] z-10"
+        className="z-10"
         isActive={activeWidget === 'widget2'}
       />
       <div className="z-20 flex flex-col items-center justify-between h-full">

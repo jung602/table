@@ -36,7 +36,7 @@ export default function CoolWidget({
       <div 
         className="absolute overflow-hidden"
         style={{
-          width: 416,
+          width: 412,
           height: 875,
           borderRadius: '260px 260px 0 0',
           top: '0',

@@ -14,25 +14,17 @@ export default function Player({ width, height, className = '', isActive = false
   const animationStartTime = useRef<number>(Date.now());
   const progressRef = useRef<SVGPathElement | SVGLineElement>(null);
   
-  const borderRadius = width === 418 ? 260 : (260 * (width / 418)); // 위젯 크기에 비례한 border radius
   const strokeWidth = 10;
   const padding = strokeWidth / 2;
   const animationDuration = 240000; // 240초를 밀리초로
   
-  // 사각형 경로의 둘레 계산 (border radius 고려)
+  // 직선 플레이어용 변수
   const rectWidth = width - strokeWidth;
-  const rectHeight = height - strokeWidth;
-  const adjustedRadius = Math.min(borderRadius, rectWidth / 2, rectHeight / 2);
-  
-  // 둥근 사각형의 둘레 계산
-  const straightSides = 2 * (rectWidth - 2 * adjustedRadius) + 2 * (rectHeight - 2 * adjustedRadius);
-  const cornerPerimeter = 2 * Math.PI * adjustedRadius;
-  const totalPerimeter = straightSides + cornerPerimeter;
 
-  // 직선 플레이어의 길이 (활성화 시 사용)
-  const lineLength = rectWidth - 200; // 좌우 마진 20씩
-  const lineY = isActive ? height - 240 : height / 2; // 확장 시 하단 120px, 기본은 중앙
-  const lineStartX = padding + 100; // 시작점
+  // 직선 플레이어의 길이 (항상 사용)
+  const lineLength = rectWidth - 40; // 좌우 마진 100씩
+  const lineY = isActive ? height - 240 : height - 200; // 확장 시 하단 240px, 축소 시 하단 120px
+  const lineStartX = padding + 20; // 시작점
   const lineEndX = lineStartX + lineLength; // 끝점
 
   // 현재 진행도 업데이트
@@ -55,7 +47,6 @@ export default function Player({ width, height, className = '', isActive = false
   }, [animationDuration]);
 
   // 진행도에 따른 stroke-dashoffset 계산
-  const getRectOffset = () => totalPerimeter * (1 - currentProgress);
   const getLineOffset = () => lineLength * (1 - currentProgress);
 
   // 시간 계산 (총 재생시간 3:54 = 234초)
@@ -71,23 +62,7 @@ export default function Player({ width, height, className = '', isActive = false
   const currentTimeString = formatTime(currentTimeSeconds);
   const totalTimeString = "3:54";
 
-  // 둥근 사각형 path 생성
-  const createRoundedRectPath = (x: number, y: number, w: number, h: number, r: number) => {
-    return `
-      M ${x + r} ${y}
-      L ${x + w - r} ${y}
-      A ${r} ${r} 0 0 1 ${x + w} ${y + r}
-      L ${x + w} ${y + h - r}
-      A ${r} ${r} 0 0 1 ${x + w - r} ${y + h}
-      L ${x + r} ${y + h}
-      A ${r} ${r} 0 0 1 ${x} ${y + h - r}
-      L ${x} ${y + r}
-      A ${r} ${r} 0 0 1 ${x + r} ${y}
-      Z
-    `;
-  };
 
-  const rectPath = createRoundedRectPath(padding, padding, rectWidth, rectHeight, adjustedRadius);
 
   return (
     <div 
@@ -106,32 +81,8 @@ export default function Player({ width, height, className = '', isActive = false
             left: 0,
           }}
         >
-          {!isActive ? (
-            // 둥근 사각형 모드 (비활성화 상태)
-            <>
-              {/* 배경 사각형 */}
-              <path
-                d={rectPath}
-                fill="none"
-                stroke="rgba(255, 255, 255, 0.3)"
-                strokeWidth={strokeWidth}
-              />
-              
-              {/* 진행 사각형 */}
-              <path
-                ref={progressRef as React.RefObject<SVGPathElement>}
-                d={rectPath}
-                fill="none"
-                stroke="rgba(255, 255, 255, 1)"
-                strokeWidth={strokeWidth}
-                strokeLinecap="round"
-                strokeDasharray={totalPerimeter}
-                strokeDashoffset={getRectOffset()}
-                style={{ transition: isActive ? 'none' : 'stroke-dashoffset 0.3s ease-in-out' }}
-              />
-            </>
-          ) : (
-            // 직선 플레이어 모드 (활성화 상태)
+          {/* 직선 플레이어 모드 (확장상태일 때만 표시) */}
+          {isActive && (
             <>
               {/* 배경 라인 */}
               <line

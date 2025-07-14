@@ -28,12 +28,21 @@ export default function NewsWidget({
     <Widget style={style}>
       <div className="w-full h-full flex items-center justify-center overflow-hidden rounded-lg rounded-[196px]">
         <img 
-          src="https://static01.nyt.com/images/2025/02/07/multimedia/07dc-trump-news-time-musk/07dc-trump-news-time-musk-superJumbo.jpg?quality=75&auto=webp"
+          src="https://i.pinimg.com/1200x/d3/65/64/d365641919e902979ad574457550476f.jpg"
           alt="News Image"
-          className="w-[1500px] h-[1500px] object-cover rounded-lg pb-[50px]"
+          className="w-[1000px] h-[1000px] object-cover rounded-lg pb-[10px] opacity-50"
         />
-        <div className="text-[64px] absolute bottom-20 left-20 font-bold text-white mb-4 text-center leading-tight">
-          A Time Out For Musk
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent rounded-lg"></div>
+        <div className="absolute top-[42px] left-1/2 transform -translate-x-1/2">
+          <img src="/icons/news.svg" alt="News" width="54" height="54" />
+        </div>
+        <div className="absolute bottom-64 rounded-full m-2 bg-black left-20 w-24 h-24 overflow-hidden">
+        <img 
+          src="https://i.pinimg.com/280x280_RS/67/58/0a/67580a2ba33cfe4b2afb72ec47c14836.jpg"
+          alt="NewyorkTimes" 
+        /></div>
+        <div className="text-[54px] absolute bottom-20 left-20 font-bold text-white mb-4 text-left leading-tight">
+        When does it turn into a movement?
         </div>
       </div>
     </Widget>

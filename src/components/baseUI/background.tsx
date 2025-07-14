@@ -40,7 +40,7 @@ const Background: React.FC<BackgroundProps> = ({
         className="absolute inset-0 m-[4px]"
         style={{
           background: `
-            linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 100%),
+            linear-gradient(-180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 100%),
             radial-gradient(circle, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, .1) 100%),
             #2D363F
           `,
