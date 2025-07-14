@@ -22,9 +22,9 @@ export default function Player({ width, height, className = '', isActive = false
   const rectWidth = width - strokeWidth;
 
   // 직선 플레이어의 길이 (항상 사용)
-  const lineLength = rectWidth - 40; // 좌우 마진 100씩
+  const lineLength = rectWidth - 200; // 좌우 마진 100씩
   const lineY = isActive ? height - 240 : height - 200; // 확장 시 하단 240px, 축소 시 하단 120px
-  const lineStartX = padding + 20; // 시작점
+  const lineStartX = padding + 100; // 시작점
   const lineEndX = lineStartX + lineLength; // 끝점
 
   // 현재 진행도 업데이트
@@ -128,21 +128,17 @@ export default function Player({ width, height, className = '', isActive = false
             }}
           >
             <span
+              className="text-32-medium"
               style={{
                 color: 'rgba(255, 255, 255, 0.8)',
-                fontSize: '32px',
-                fontFamily: 'OneUISansGUI',
-                fontWeight: 400,
               }}
             >
               {currentTimeString}
             </span>
             <span
+              className="text-32-medium"
               style={{
                 color: 'rgba(255, 255, 255, 0.8)',
-                fontSize: '32px',
-                fontFamily: 'OneUISansGUI',
-                fontWeight: 400,
               }}
             >
               {totalTimeString}

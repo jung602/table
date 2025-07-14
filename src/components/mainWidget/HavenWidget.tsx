@@ -58,10 +58,8 @@ export default function HavenWidget({
             </svg>
           </div>
           <div
-            className="text-[42px] font-bold bg-clip-text text-transparent"
+            className="text-42-bold bg-clip-text text-transparent"
             style={{
-              fontFamily: 'OneUISansGUI',
-              fontWeight: 700,
               lineHeight: '44px',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',

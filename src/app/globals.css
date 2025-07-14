@@ -84,3 +84,39 @@ body {
   color: var(--foreground);
   font-family: 'OneUISansGUI', system-ui, sans-serif;
 }
+
+/* 표준화된 텍스트 스타일 */
+.text-64-bold {
+  font-family: 'OneUISansGUI';
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.text-42-bold {
+  font-family: 'OneUISansGUI';
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.text-42-medium {
+  font-family: 'OneUISansGUI';
+  font-size: 42px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.text-32-bold {
+  font-family: 'OneUISansGUI';
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.text-32-medium {
+  font-family: 'OneUISansGUI';
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.2;
+}

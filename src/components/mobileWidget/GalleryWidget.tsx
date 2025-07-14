@@ -37,20 +37,16 @@ export default function GalleryWidget({
          </div>
         <div className="z-20 text-center absolute bottom-[80px] left-1/2 transform -translate-x-1/2">
           <div 
-            className="z-20 text-[42px] text-white mb-1"
+            className="z-20 text-42-bold text-white mb-1"
             style={{
-              fontFamily: 'OneUISansGUI',
-              fontWeight: 700,
               lineHeight: '54px',
             }}
           >
             Africa
           </div>
           <div 
-            className="z-20 text-[32px] text-white opacity-70"
+            className="z-20 text-32-medium text-white opacity-70"
             style={{
-              fontFamily: 'OneUISansGUI',
-              fontWeight: 400,
               lineHeight: '32px',
             }}
           >

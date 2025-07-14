@@ -30,7 +30,7 @@ export default function NewsWidget({
         <img 
           src="https://i.pinimg.com/1200x/d3/65/64/d365641919e902979ad574457550476f.jpg"
           alt="News Image"
-          className="w-[1000px] h-[1000px] object-cover rounded-lg pb-[10px] opacity-50"
+          className="w-[877px] h-[877px] object-cover rounded-lg pb-[10px] opacity-50"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent rounded-lg"></div>
         <div className="absolute top-[42px] left-1/2 transform -translate-x-1/2">
@@ -41,8 +41,8 @@ export default function NewsWidget({
           src="https://i.pinimg.com/280x280_RS/67/58/0a/67580a2ba33cfe4b2afb72ec47c14836.jpg"
           alt="NewyorkTimes" 
         /></div>
-        <div className="text-[54px] absolute bottom-20 left-20 font-bold text-white mb-4 text-left leading-tight">
-        When does it turn into a movement?
+        <div className="text-64-bold absolute bottom-20 left-20 text-white mb-4 text-left leading-tight">
+        When does it turn <br />into a movement?
         </div>
       </div>
     </Widget>

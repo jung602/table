@@ -180,16 +180,13 @@ export default function SpotifyWidget({
                 return (
                   <div
                     key={index}
+                    className="text-64-bold"
                     style={{
-                      fontSize: '64px',
-                      fontFamily: 'OneUISansGUI',
-                      fontWeight: 600,
-                      lineHeight: '96px',
                       color: isActive ? '#FFFFFF' : isPast ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.5)',
                       opacity: isActive ? 1 : isPast ? 0.3 : 0.5,
                       transform: isActive ? 'scale(1.02)' : 'scale(1)',
                       transition: isFirstExpansion ? 'none' : 'all 0.5s ease-out',
-                      textShadow: 'none', // 그림자 효과 제거
+                      lineHeight: '96px',
                     }}
                   >
                     {lyric.text}
@@ -242,23 +239,17 @@ export default function SpotifyWidget({
           }}
         >
           <div 
-            className="z-20 text-white mb-1"
+            className={`z-20 text-white mb-1 ${activeWidget === 'widget2' ? 'text-64-bold' : 'text-42-bold'}`}
             style={{
-              fontFamily: 'OneUISansGUI',
-              fontWeight: 700,
-              fontSize: activeWidget === 'widget2' ? '64px' : '42px', // 확장 시 폰트 사이즈 조정 가능
-              lineHeight: activeWidget === 'widget2' ? '72px' : '54px', // 확장 시 라인 높이 조정 가능
+              lineHeight: activeWidget === 'widget2' ? '72px' : '54px',
             }}
           >
             Kill Bill
           </div>
           <div 
-            className="z-20 text-white opacity-70"
+            className={`z-20 text-white opacity-70 ${activeWidget === 'widget2' ? 'text-42-medium' : 'text-32-medium'}`}
             style={{
-              fontFamily: 'OneUISansGUI',
-              fontWeight: 400,
-              fontSize: activeWidget === 'widget2' ? '48px' : '32px', // 확장 시 폰트 사이즈 조정 가능
-              lineHeight: activeWidget === 'widget2' ? '48px' : '32px', // 확장 시 라인 높이 조정 가능
+              lineHeight: activeWidget === 'widget2' ? '48px' : '32px',
             }}
           >
             SZA

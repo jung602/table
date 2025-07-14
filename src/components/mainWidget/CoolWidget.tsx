@@ -89,9 +89,8 @@ export default function CoolWidget({
           }}
         >
           <p 
-            className="text-white font-semibold"
+            className="text-white text-32-bold"
             style={{
-              fontSize: '32px',
               lineHeight: '42px',
             }}
           >
@@ -119,7 +118,7 @@ export default function CoolWidget({
             }
             
             .rotating-gradient {
-              background: conic-gradient(from var(--gradient-angle), rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 15%, rgba(255, 255, 255, .5) 30%, rgba(255, 255, 255, 0.5) 100%), rgba(255, 255, 255, .2);
+              background: conic-gradient(from var(--gradient-angle), rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 15%, rgba(255, 255, 255, .1) 30%, rgba(255, 255, 255, 0.1) 100%), rgba(255, 255, 255, .1);
               animation: rotate-gradient 2s linear infinite;
             }
           `}</style>
@@ -143,11 +142,7 @@ export default function CoolWidget({
               }}
             >
               <span 
-                className="text-white font-medium relative z-10"
-                style={{
-                  fontSize: '28px',
-                  lineHeight: '32px',
-                }}
+                className="text-white text-32-medium relative z-10"
               >
                 AI Cooling
               </span>
@@ -159,7 +154,7 @@ export default function CoolWidget({
         <div
         className="absolute"
         style={{
-          width: 370,
+          width: 380,
           borderRadius: '50px',
           top: '50%',
           left: '50%',
@@ -181,7 +176,7 @@ export default function CoolWidget({
           >
             <img
               src="/image/juice.png"
-              alt="Ocean Spray Blueberry Juice"
+              alt="Blueberry Juice"
               style={{
                 width: '100%',
                 height: '100%',
@@ -190,12 +185,12 @@ export default function CoolWidget({
             />
           </div>
             <h3 
-              className="text-white text-[28px] text-center  font-bold"
+              className="text-white text-32-bold text-center mb-1"
             >
-              Ocean Spray Blueberry
+              Blueberry Juice
             </h3>
                           <p 
-                className="text-white/50 text-[28px] text-center font-medium mb-4"
+                className="text-white/50 text-32-medium text-center mb-4"
               >
                 21/07/2025
               </p>
