@@ -27,10 +27,19 @@ export default function GalleryWidget({
 
   return (
     <Widget style={style}>
-      <div className="relative w-full h-full m-[-2px]">
+      <div className="relative w-full h-full">
         <ImageLong 
           src="/image/africa.png"
           overlayImage="none"
+          style={{
+            width: '412px',
+            height: '877px',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            borderRadius: 260,
+            zIndex: 0,
+          }}
         /> 
                  <div className="absolute top-[42px] left-1/2 transform -translate-x-1/2">
            <img src="/icons/gallery.svg" alt="Gallery" width="54" height="54" />

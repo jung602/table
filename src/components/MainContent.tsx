@@ -152,50 +152,6 @@ export default function MainContent({
           />
         </div>
       )}
-
-      {/* 왼쪽 위젯 숨김 시 왼쪽 중앙에 180도 회전된 BackButton */}
-      {leftWidgetsOpacity === 0 && !activeWidget && (
-        <div
-          onClick={resetAllWidgets}
-          style={{
-            position: 'absolute',
-            left: 60,
-            top: '50%',
-            transform: 'translateY(-50%) rotate(180deg)',
-            zIndex: 300,
-            cursor: 'pointer',
-          }}
-        >
-          <BackButton 
-            style={{
-              transition: 'all 0.25s ease-out',
-              opacity: 1,
-            }}
-          />
-        </div>
-      )}
-
-      {/* 오른쪽 위젯 숨김 시 오른쪽 중앙에 BackButton */}
-      {rightWidgetsOpacity === 0 && !activeWidget && (
-        <div
-          onClick={resetAllWidgets}
-          style={{
-            position: 'absolute',
-            right: 60,
-            top: '50%',
-            transform: 'translateY(-50%)',
-            zIndex: 300,
-            cursor: 'pointer',
-          }}
-        >
-          <BackButton 
-            style={{
-              transition: 'all 0.25s ease-out',
-              opacity: 1,
-            }}
-          />
-        </div>
-      )}
     </div>
   );
 } 

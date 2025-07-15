@@ -229,8 +229,8 @@ export class WidgetAnimationController {
   // 왼쪽 위젯 위치 계산
   private static calculateLeftWidgetPosition(rightWidgetsOpacity: number): WidgetPosition {
     if (rightWidgetsOpacity === 0) {
-      // 기존: right: 522 → left: 1438 (2378 - 522 - 418)
-      return { left: 1438 + 64 };
+      // 모바일 위젯 모드에서 오른쪽에서 64px 위치에 배치
+      return { left: 1896 };
     }
     return { left: 64 }; // 기본 위치
   }
@@ -238,8 +238,8 @@ export class WidgetAnimationController {
   // 오른쪽 위젯 위치 계산
   private static calculateRightWidgetPosition(leftWidgetsOpacity: number): WidgetPosition {
     if (leftWidgetsOpacity === 0) {
-      // 기존: left: 522 → 그대로 유지
-      return { left: 522 };
+      // 홈 위젯 모드에서 왼쪽에서 64px 위치에 배치
+      return { left: 64 };
     }
     // 기존: right: 64 → left: 1896 (2378 - 64 - 418)
     return { left: 1896 };
@@ -248,7 +248,7 @@ export class WidgetAnimationController {
   // 알림 위젯 위치 계산
   private static calculateNotificationPosition(leftWidgetsOpacity: number): WidgetPosition {
     if (leftWidgetsOpacity === 0) {
-      return { left: 956 };
+      return { left: 546 };
     }
     // 기존: right: 64 → left: 1896 (2378 - 64 - 418)
     return { left: 1896 };
@@ -257,7 +257,7 @@ export class WidgetAnimationController {
   // 날씨 위젯 위치 계산
   private static calculateSettingsPosition(rightWidgetsOpacity: number): WidgetPosition {
     if (rightWidgetsOpacity === 0) {
-      return { left: 956 +64 };
+      return { left: 1438 };
     }
     return { left: 64 }; // 기본 위치
   }
@@ -265,7 +265,7 @@ export class WidgetAnimationController {
   // 갤러리 위젯 위치 계산 (WeatherWidget 위에 배치)
   private static calculateGalleryPosition(rightWidgetsOpacity: number): WidgetPosition {
     if (rightWidgetsOpacity === 0) {
-      return { left: 956 + 64 };
+      return { left: 1438 };
     }
     return { left: 64 }; // 기본 위치
   }
@@ -273,8 +273,8 @@ export class WidgetAnimationController {
   // 뉴스 위젯 위치 계산 (큰 위젯, 위쪽)
   private static calculateNewsPosition(rightWidgetsOpacity: number): WidgetPosition {
     if (rightWidgetsOpacity === 0) {
-      // 우측 위젯들이 숨겨진 경우 중앙에 배치
-      return { left: 64 }; // (2378 - 877) / 2 ≈ 750
+      // 모바일 위젯 모드에서 오른쪽으로 이동
+      return { left: 522 };
     }
     return { left: 64 }; // 기본 위치
   }
@@ -282,8 +282,8 @@ export class WidgetAnimationController {
   // 건강 위젯 위치 계산 (작은 위젯, 왼쪽 하단)
   private static calculateHealthPosition(rightWidgetsOpacity: number): WidgetPosition {
     if (rightWidgetsOpacity === 0) {
-      // 우측 위젯들이 숨겨진 경우 중앙 좌측에 배치
-      return { left: 64 }; // 중앙 왼쪽 위치 (750 - 109)
+      // 모바일 위젯 모드에서도 왼쪽 64px 위치 유지
+      return { left: 522 };
     }
     return { left: 64 }; // 기본 위치
   }

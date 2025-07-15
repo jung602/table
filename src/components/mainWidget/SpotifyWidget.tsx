@@ -207,7 +207,6 @@ export default function SpotifyWidget({
           blendMode="normal"
           saturation={1}
           style={{
-            
             position: 'absolute',
             top: 0,
             left: 0,
