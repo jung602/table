@@ -54,7 +54,7 @@ export default function CoolWidget({
           className="absolute top-[200px] left-1/2 transform -translate-x-1/2 blur-[50px]"
           style={{
             width: '80%',
-            height: '20%',
+            height: '80%',
             backgroundImage: 'url(/image/topGradient.svg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center top',
@@ -67,7 +67,7 @@ export default function CoolWidget({
           className="absolute top-[200px] left-1/2 transform -translate-x-1/2 blur-[50px]"
           style={{
             width: '80%',
-            height: '20%',
+            height: '80%',
             backgroundImage: 'url(/image/topGradient.svg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center top',
@@ -78,7 +78,7 @@ export default function CoolWidget({
         >
         </div>
 
-        {/* 그라디언트 영역 위 텍스트 */}
+        {/* 그라디언트 영역 위 텍스트
         <div
           className="absolute left-1/2 transform -translate-x-1/2 px-8"
           style={{
@@ -96,10 +96,50 @@ export default function CoolWidget({
           >
             Expires tommorow, better drink it soon!
           </p>
-        </div>
+        </div> */}
 
-        {/* AI cooling 컴포넌트 */}
-        <div
+      <div className="absolute top-[160px] w-full h-full flex flex-col items-center justify-center">
+            {/* 원본 이미지 */}
+            <img
+              src="/image/juice.png"
+              alt="Blueberry Juice"
+              style={{
+                width: '80%',
+                height: '80%',
+                objectFit: 'contain',
+                zIndex: 10,
+              }}
+            />
+              <img
+                src="/image/juice2.png"
+                alt="Blueberry Juice Reflection"
+                style={{
+                  width: '80%',
+                  height: '80%',
+                  objectFit: 'contain',
+                  marginTop: '-120px',
+                  opacity: 0.3, // 기본 투명도
+                  maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 50%)',
+                  WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 50%)',
+                }}
+              />
+      </div>
+
+      <div className="absolute w-full bottom-[80px] left-1/2 transform -translate-x-1/2">
+            <h3 
+              className="text-white text-42-bold text-center mb-1"
+            >
+              Berry Juice
+            </h3>
+                          <p 
+                className="text-white/50 text-32-medium text-center"
+              >
+               Expires Today
+              </p>
+      </div>
+
+      {/* AI cooling 컴포넌트 */}
+      <div
           className="absolute left-1/2 transform -translate-x-1/2"
           style={{
             top: 50,
@@ -148,9 +188,9 @@ export default function CoolWidget({
               </span>
             </div>
           </div>
-        </div>
+      </div>
 
-        {/* 내부 카드 */}
+        {/* 내부 카드
         <div
         className="absolute"
         style={{
@@ -195,7 +235,7 @@ export default function CoolWidget({
                 21/07/2025
               </p>
 
-          </div>
+          </div> */}
 
       </div>
 
